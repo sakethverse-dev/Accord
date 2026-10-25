@@ -129,6 +129,30 @@ export const AuthPage = ({ onAuthSuccess }) => {
           </p>
         </div>
 
+        {/* Invited Link Notice if present */}
+        {localStorage.getItem('pactflow_pending_invite') && (
+          <div style={{
+            background: 'var(--accent-bg)',
+            border: '1px solid var(--accent)',
+            borderRadius: '10px',
+            padding: '12px 16px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontSize: '0.8rem',
+            color: 'var(--text-main)',
+          }}>
+            <Shield size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
+            <div>
+              <strong>Secure Room Invitation Detected:</strong>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '2px' }}>
+                Sign in or register below. You will be connected to the collaborative negotiation room immediately.
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Auth Form Card */}
         <div style={{
           background: 'var(--bg-surface)',

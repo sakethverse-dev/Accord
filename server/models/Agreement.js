@@ -39,6 +39,22 @@ const clauseSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  partyAText: {
+    type: String,
+    default: '',
+  },
+  partyBText: {
+    type: String,
+    default: '',
+  },
+  hasDraftConflict: {
+    type: Boolean,
+    default: false,
+  },
+  diffTokens: {
+    type: Array,
+    default: [],
+  },
   status: {
     type: String,
     enum: ['ORIGINAL', 'PROPOSED', 'RESOLVED', 'OVERRIDDEN'],
@@ -200,6 +216,17 @@ const agreementSchema = new mongoose.Schema({
     default: 0,
   },
   clauses: [clauseSchema],
+  partyADraft: {
+    text: { type: String, default: '' },
+    title: { type: String, default: '' },
+    submittedAt: { type: Date, default: Date.now },
+  },
+  partyBDraft: {
+    text: { type: String, default: '' },
+    title: { type: String, default: '' },
+    submittedAt: { type: Date },
+  },
+  differences: [{ type: mongoose.Schema.Types.Mixed }],
   proposals: [proposalSchema],
   signatures: [signatureSchema],
   cryptoSeal: {

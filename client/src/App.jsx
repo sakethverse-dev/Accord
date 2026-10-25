@@ -15,20 +15,31 @@ const AppContent = () => {
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'room' | 'policy'
   const [activeAgreementId, setActiveAgreementId] = useState(null);
 
-  // Check URL pathname for /invite/:token
+  // Check URL pathname for /invite/:token or pending invite from storage
   useEffect(() => {
     const path = window.location.pathname;
+    let token = null;
     if (path.startsWith('/invite/')) {
-      const token = path.split('/invite/')[1];
-      if (token && user) {
-        api.agreements.joinByToken(token)
-          .then((agreement) => {
-            setActiveAgreementId(agreement._id);
-            setCurrentView('room');
-            window.history.pushState({}, '', '/');
-          })
-          .catch((err) => console.error('Invite join error:', err));
+      token = path.split('/invite/')[1];
+      if (token) {
+        localStorage.setItem('pactflow_pending_invite', token);
       }
+    } else {
+      token = localStorage.getItem('pactflow_pending_invite');
+    }
+
+    if (token && user) {
+      api.agreements.joinByToken(token)
+        .then((agreement) => {
+          localStorage.removeItem('pactflow_pending_invite');
+          setActiveAgreementId(agreement._id);
+          setCurrentView('room');
+          window.history.pushState({}, '', '/');
+        })
+        .catch((err) => {
+          console.error('Invite join error:', err);
+          localStorage.removeItem('pactflow_pending_invite');
+        });
     }
   }, [user]);
 

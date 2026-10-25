@@ -5,6 +5,7 @@ const { SAMPLE_CONTRACT, parseRawContractText } = require('../services/clauseExt
 const { evaluateClause } = require('../services/policyEngine');
 const { calculateAgreementRisk } = require('../services/riskCalculator');
 const { verifyDocumentIntegrity } = require('../services/cryptoSeal');
+const { reconcileDrafts, ORGANIZATION_COUNTER_DRAFT } = require('../services/clauseReconciliation');
 
 // @desc    Create a new agreement or load demo contract
 // @route   POST /api/agreements
@@ -44,6 +45,7 @@ const createAgreement = async (req, res, next) => {
     const riskMetrics = calculateAgreementRisk(auditedClauses);
 
     const inviteToken = crypto.randomBytes(8).toString('hex');
+    const initialDraftText = rawText || rawClauses.map((c) => `${c.sectionNumber || ''} ${c.title}\n${c.currentText}`).join('\n\n');
 
     const agreement = await Agreement.create({
       title: agreementTitle,
@@ -54,6 +56,16 @@ const createAgreement = async (req, res, next) => {
       criticalRiskCount: riskMetrics.criticalRiskCount,
       warningRiskCount: riskMetrics.warningRiskCount,
       clauses: auditedClauses,
+      partyADraft: {
+        text: initialDraftText,
+        title: agreementTitle,
+        submittedAt: new Date(),
+      },
+      partyBDraft: {
+        text: '',
+        title: '',
+      },
+      differences: [],
       proposals: [],
       signatures: [],
       auditLogs: [
@@ -205,10 +217,99 @@ const verifySeal = async (req, res, next) => {
   }
 };
 
+// @desc    Submit counterparty draft and run AI multi-draft reconciliation
+// @route   POST /api/agreements/:id/compare-drafts
+// @access  Private
+const compareDrafts = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { draftText, useSampleCounter } = req.body;
+
+    const agreement = await Agreement.findById(id);
+    if (!agreement) {
+      return res.status(404).json({ success: false, message: 'Agreement not found.' });
+    }
+
+    // STRICT IMMUTABILITY CHECK: Once any signature is recorded, neither party can update!
+    if (agreement.status === 'FULLY_EXECUTED_LOCKED' || (agreement.signatures && agreement.signatures.length > 0)) {
+      return res.status(403).json({
+        success: false,
+        message: 'FORBIDDEN: Contract terms are permanently frozen because signature execution has commenced.',
+      });
+    }
+
+    const incomingText = useSampleCounter ? ORGANIZATION_COUNTER_DRAFT : (draftText || '');
+    if (!incomingText.trim()) {
+      return res.status(400).json({ success: false, message: 'Draft text cannot be empty.' });
+    }
+
+    const isCreator = agreement.creator.toString() === req.user._id.toString();
+
+    if (!isCreator && !agreement.invitedParty) {
+      agreement.invitedParty = req.user._id;
+    }
+
+    // Ensure Party A draft has text
+    let textA = agreement.partyADraft?.text;
+    if (!textA || textA.trim() === '') {
+      textA = agreement.clauses.map((c) => `${c.sectionNumber || ''} ${c.title}\n${c.currentText}`).join('\n\n');
+      agreement.partyADraft = {
+        text: textA,
+        title: agreement.title,
+        submittedAt: new Date(),
+      };
+    }
+
+    let textB = incomingText;
+    if (isCreator) {
+      textA = incomingText;
+      agreement.partyADraft.text = incomingText;
+      agreement.partyADraft.submittedAt = new Date();
+    } else {
+      agreement.partyBDraft = {
+        text: incomingText,
+        title: `${agreement.title} (Counterparty Version)`,
+        submittedAt: new Date(),
+      };
+    }
+
+    // Run AI Multi-Draft Clause Reconciliation Engine
+    const reconciled = reconcileDrafts(textA, textB || textA);
+
+    agreement.clauses = reconciled.clauses;
+    agreement.differences = reconciled.differences;
+
+    const riskMetrics = calculateAgreementRisk(agreement.clauses);
+    agreement.alignmentScore = riskMetrics.alignmentScore;
+    agreement.criticalRiskCount = riskMetrics.criticalRiskCount;
+    agreement.warningRiskCount = riskMetrics.warningRiskCount;
+    agreement.status = 'IN_NEGOTIATION';
+
+    agreement.auditLogs.push({
+      action: 'MULTI_DRAFT_AI_RECONCILED',
+      performedBy: req.user.name,
+      performedByRole: req.user.role,
+      timestamp: new Date(),
+      details: `AI Multi-Draft analysis executed comparing Party A & Party B drafts. ${reconciled.totalDifferences} differing terms detected and balanced compromises generated.`,
+    });
+
+    await agreement.save();
+
+    res.json({
+      success: true,
+      message: `AI analysis complete: ${reconciled.totalDifferences} differences identified with recommended compromises.`,
+      data: agreement,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createAgreement,
   getAgreements,
   getAgreementById,
   joinByToken,
   verifySeal,
+  compareDrafts,
 };

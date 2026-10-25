@@ -113,6 +113,16 @@ export const api = {
       const data = await handleResponse(res);
       return data.data;
     },
+
+    compareDrafts: async (id, { draftText, useSampleCounter }) => {
+      const res = await fetch(`${API_BASE}/agreements/${id}/compare-drafts`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ draftText, useSampleCounter }),
+      });
+      const data = await handleResponse(res);
+      return data.data;
+    },
   },
 
   // Proposals & Redline
@@ -122,6 +132,15 @@ export const api = {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ proposedText, rationale }),
+      });
+      const data = await handleResponse(res);
+      return data.data;
+    },
+
+    adoptCompromise: async (agreementId, clauseId) => {
+      const res = await fetch(`${API_BASE}/agreements/${agreementId}/clauses/${clauseId}/adopt-compromise`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
       });
       const data = await handleResponse(res);
       return data.data;
@@ -150,11 +169,11 @@ export const api = {
 
   // Digital Signatures
   signatures: {
-    sign: async (agreementId, { signerName, affirmationChecked }) => {
+    sign: async (agreementId, { signerName, affirmationChecked, signatureImage }) => {
       const res = await fetch(`${API_BASE}/agreements/${agreementId}/sign`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ signerName, affirmationChecked }),
+        body: JSON.stringify({ signerName, affirmationChecked, signatureImage }),
       });
       const data = await handleResponse(res);
       return data.data;

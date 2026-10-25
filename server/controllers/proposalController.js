@@ -21,11 +21,11 @@ const submitProposal = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Agreement not found.' });
     }
 
-    // IMMUTABILITY CHECK
-    if (agreement.status === 'FULLY_EXECUTED_LOCKED') {
+    // STRICT IMMUTABILITY CHECK: Once any party signs, terms are legally frozen
+    if (agreement.status === 'FULLY_EXECUTED_LOCKED' || (agreement.signatures && agreement.signatures.length > 0)) {
       return res.status(403).json({
         success: false,
-        message: 'FORBIDDEN: This agreement has been signed by both parties and is permanently locked against modifications.',
+        message: 'FORBIDDEN: A digital signature has already been applied. Contract terms are permanently locked against modifications by either party.',
       });
     }
 
@@ -98,11 +98,11 @@ const respondToProposal = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Agreement not found.' });
     }
 
-    // IMMUTABILITY CHECK
-    if (agreement.status === 'FULLY_EXECUTED_LOCKED') {
+    // STRICT IMMUTABILITY CHECK: Once any party signs, terms are legally frozen
+    if (agreement.status === 'FULLY_EXECUTED_LOCKED' || (agreement.signatures && agreement.signatures.length > 0)) {
       return res.status(403).json({
         success: false,
-        message: 'FORBIDDEN: Agreement is fully executed and cannot be modified.',
+        message: 'FORBIDDEN: Agreement signing has commenced. Modifications are permanently locked for both parties.',
       });
     }
 
@@ -210,8 +210,72 @@ const getDiff = async (req, res, next) => {
   }
 };
 
+// @desc    Adopt an AI-recommended compromise directly onto a clause
+// @route   POST /api/agreements/:id/clauses/:clauseId/adopt-compromise
+// @access  Private
+const adoptCompromise = async (req, res, next) => {
+  try {
+    const { id: agreementId, clauseId } = req.params;
+    const agreement = await Agreement.findById(agreementId);
+    if (!agreement) {
+      return res.status(404).json({ success: false, message: 'Agreement not found.' });
+    }
+
+    // STRICT IMMUTABILITY CHECK
+    if (agreement.status === 'FULLY_EXECUTED_LOCKED' || (agreement.signatures && agreement.signatures.length > 0)) {
+      return res.status(403).json({
+        success: false,
+        message: 'FORBIDDEN: Contract terms are legally frozen because a signature has already been recorded.',
+      });
+    }
+
+    const clause = agreement.clauses.find((c) => c.clauseId === clauseId);
+    if (!clause) {
+      return res.status(404).json({ success: false, message: 'Clause not found in agreement.' });
+    }
+
+    if (!clause.suggestedReplacement) {
+      return res.status(400).json({ success: false, message: 'No AI compromise suggested for this clause.' });
+    }
+
+    clause.currentText = clause.suggestedReplacement;
+    clause.status = 'RESOLVED';
+    clause.riskLevel = 'SAFE';
+    clause.hasDraftConflict = false;
+
+    // Recalculate agreement risk
+    const newRiskMetrics = calculateAgreementRisk(agreement.clauses);
+    agreement.alignmentScore = newRiskMetrics.alignmentScore;
+    agreement.criticalRiskCount = newRiskMetrics.criticalRiskCount;
+    agreement.warningRiskCount = newRiskMetrics.warningRiskCount;
+
+    if (newRiskMetrics.criticalRiskCount === 0) {
+      agreement.status = 'ALIGNED';
+    }
+
+    agreement.auditLogs.push({
+      action: 'AI_COMPROMISE_ADOPTED',
+      performedBy: req.user.name,
+      performedByRole: req.user.role,
+      timestamp: new Date(),
+      details: `AI Balanced Compromise adopted for "${clause.title}". New Alignment Score: ${newRiskMetrics.alignmentScore}%.`,
+    });
+
+    await agreement.save();
+
+    res.json({
+      success: true,
+      message: `AI compromise adopted for "${clause.title}".`,
+      data: agreement,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   submitProposal,
   respondToProposal,
   getDiff,
+  adoptCompromise,
 };

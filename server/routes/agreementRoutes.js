@@ -6,11 +6,13 @@ const {
   getAgreementById,
   joinByToken,
   verifySeal,
+  compareDrafts,
 } = require('../controllers/agreementController');
 const {
   submitProposal,
   respondToProposal,
   getDiff,
+  adoptCompromise,
 } = require('../controllers/proposalController');
 const { signAgreement } = require('../controllers/signatureController');
 const { protect } = require('../middleware/authMiddleware');
@@ -23,9 +25,11 @@ router.route('/')
 router.get('/:id', protect, getAgreementById);
 router.post('/join/:token', protect, joinByToken);
 router.get('/:id/verify-seal', protect, verifySeal);
+router.post('/:id/compare-drafts', protect, compareDrafts);
 
 // Negotiation & Proposals
 router.post('/:id/clauses/:clauseId/propose', protect, submitProposal);
+router.post('/:id/clauses/:clauseId/adopt-compromise', protect, adoptCompromise);
 router.post('/:id/proposals/:proposalId/respond', protect, respondToProposal);
 router.post('/diff', protect, getDiff);
 
