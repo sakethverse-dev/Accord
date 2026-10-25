@@ -1,0 +1,292 @@
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { Shield, User, Briefcase, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+
+export const AuthPage = ({ onAuthSuccess }) => {
+  const { login, register, quickLoginDemo } = useAuth();
+  const [isRegister, setIsRegister] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('freelancer');
+  const [companyOrTitle, setCompanyOrTitle] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isRegister) {
+        await register({
+          name,
+          email,
+          password,
+          role,
+          companyOrTitle,
+        });
+      } else {
+        await login(email, password);
+      }
+      onAuthSuccess?.();
+    } catch (err) {
+      setError(err.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickDemo = async (demoRole) => {
+    setError('');
+    try {
+      await quickLoginDemo(demoRole);
+      onAuthSuccess?.();
+    } catch (err) {
+      setError(err.message || 'Demo login failed');
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: 'calc(100vh - 70px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px 20px',
+    }}>
+      <div style={{ width: '100%', maxWidth: '480px' }}>
+        {/* Brand Header */}
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '16px',
+            background: 'var(--primary-gradient)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: 'var(--glow-primary)',
+            marginBottom: '14px',
+          }}>
+            <Shield size={32} color="white" />
+          </div>
+          <h2 style={{ fontSize: '1.75rem', color: '#fff', fontWeight: 800 }}>
+            {isRegister ? 'Create Your Account' : 'Welcome to PactFlow'}
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            Collaborative Contract Risk Auditing & Negotiation Room
+          </p>
+        </div>
+
+        {/* 1-Click Evaluator Demo Accounts Banner */}
+        <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '24px', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+          <div style={{ fontSize: '0.75rem', color: '#a5b4fc', textTransform: 'uppercase', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+            <Sparkles size={14} />
+            Evaluator Fast Access (1-Click Demo Logins)
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <button
+              type="button"
+              id="btn-evaluator-freelancer"
+              onClick={() => handleQuickDemo('freelancer')}
+              style={{
+                background: 'rgba(99, 102, 241, 0.15)',
+                border: '1px solid rgba(99, 102, 241, 0.35)',
+                borderRadius: '8px',
+                padding: '10px',
+                textAlign: 'left',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <User size={13} color="var(--primary)" />
+                Alex Rivera
+              </div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                Role: Freelancer
+              </div>
+            </button>
+
+            <button
+              type="button"
+              id="btn-evaluator-client"
+              onClick={() => handleQuickDemo('client')}
+              style={{
+                background: 'rgba(139, 92, 246, 0.15)',
+                border: '1px solid rgba(139, 92, 246, 0.35)',
+                borderRadius: '8px',
+                padding: '10px',
+                textAlign: 'left',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <Briefcase size={13} color="var(--secondary)" />
+                Sarah Chen
+              </div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                Role: Enterprise Client
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Auth Form Card */}
+        <div className="glass-panel" style={{ padding: '32px' }}>
+          {error && (
+            <div style={{
+              background: 'var(--risk-critical-bg)',
+              border: '1px solid var(--risk-critical-border)',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              color: '#fca5a5',
+              fontSize: '0.85rem',
+              marginBottom: '18px',
+            }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {isRegister && (
+              <>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+                    Full Legal Name
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Alex Rivera"
+                    required
+                  />
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+                    Account Role
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setRole('freelancer')}
+                      style={{
+                        padding: '10px',
+                        borderRadius: '8px',
+                        background: role === 'freelancer' ? 'rgba(99, 102, 241, 0.25)' : 'rgba(15, 23, 42, 0.6)',
+                        border: role === 'freelancer' ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
+                        color: role === 'freelancer' ? '#fff' : 'var(--text-muted)',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      👨‍💻 Freelancer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole('client')}
+                      style={{
+                        padding: '10px',
+                        borderRadius: '8px',
+                        background: role === 'client' ? 'rgba(139, 92, 246, 0.25)' : 'rgba(15, 23, 42, 0.6)',
+                        border: role === 'client' ? '1px solid var(--secondary)' : '1px solid var(--border-subtle)',
+                        color: role === 'client' ? '#fff' : 'var(--text-muted)',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      🏢 Client / Vendor
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+                    Title or Organization
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={companyOrTitle}
+                    onChange={(e) => setCompanyOrTitle(e.target.value)}
+                    placeholder={role === 'client' ? 'e.g. CloudScale Labs Inc.' : 'e.g. Independent Software Consultant'}
+                  />
+                </div>
+              </>
+            )}
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+                Email Address
+              </label>
+              <input
+                type="email"
+                className="input-field"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@company.com"
+                required
+                id="input-auth-email"
+              />
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+                Password
+              </label>
+              <input
+                type="password"
+                className="input-field"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                id="input-auth-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '12px' }}
+              disabled={loading}
+              id="btn-auth-submit"
+            >
+              {loading ? 'Authenticating...' : isRegister ? 'Complete Registration' : 'Sign In'}
+              <ArrowRight size={16} />
+            </button>
+          </form>
+
+          {/* Toggle between Login and Register */}
+          <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            {isRegister ? 'Already have an account?' : "Don't have an account yet?"}{' '}
+            <button
+              onClick={() => {
+                setIsRegister(!isRegister);
+                setError('');
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--primary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {isRegister ? 'Sign In' : 'Create Account'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
