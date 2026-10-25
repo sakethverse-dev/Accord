@@ -178,5 +178,15 @@ export const api = {
       const data = await handleResponse(res);
       return data.data;
     },
+
+    withdrawSignature: async (agreementId, reason = '') => {
+      const res = await fetch(`${API_BASE}/agreements/${agreementId}/withdraw-signature`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ reason }),
+      });
+      const data = await handleResponse(res);
+      return data.data;
+    },
   },
 };

@@ -14,7 +14,7 @@ const {
   getDiff,
   adoptCompromise,
 } = require('../controllers/proposalController');
-const { signAgreement } = require('../controllers/signatureController');
+const { signAgreement, withdrawSignature } = require('../controllers/signatureController');
 const { protect } = require('../middleware/authMiddleware');
 
 // Agreement CRUD & Ingestion
@@ -35,5 +35,6 @@ router.post('/diff', protect, getDiff);
 
 // Digital Signatures
 router.post('/:id/sign', protect, signAgreement);
+router.post('/:id/withdraw-signature', protect, withdrawSignature);
 
 module.exports = router;

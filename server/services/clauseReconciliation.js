@@ -60,12 +60,48 @@ const COMPROMISE_PATTERNS = {
   },
 };
 
+function detectSemanticCategory(text) {
+  const lower = (text || '').toLowerCase();
+  if (/(?:payment|invoice|net[- ]?\d+|milestone|fee|remuneration|paid when paid|billing)/i.test(lower)) {
+    return 'PAYMENT';
+  }
+  if (/(?:liability|indemnif|hold harmless|consequential damages|aggregate liability|direct damages|monetary cap)/i.test(lower)) {
+    return 'LIABILITY';
+  }
+  if (/(?:intellectual property|work made for hire|work-for-hire|copyright|patent|trade secret|ownership|vests|deliverables.*assign)/i.test(lower)) {
+    return 'IP_OWNERSHIP';
+  }
+  if (/(?:non-compete|non-solicit|restrictive covenant|competitive|exclusive|not engage with)/i.test(lower)) {
+    return 'NON_COMPETE';
+  }
+  if (/(?:warranty|defect|bug|remediation|remedy|guarantee|specifications)/i.test(lower)) {
+    return 'WARRANTY';
+  }
+  if (/(?:confidential|non-disclosure|nda|proprietary information)/i.test(lower)) {
+    return 'CONFIDENTIALITY';
+  }
+  if (/(?:governing law|jurisdiction|dispute|arbitration|mediation|courts)/i.test(lower)) {
+    return 'DISPUTE';
+  }
+  if (/(?:scope|deliverable|sow|milestone schedule|statement of work|services)/i.test(lower)) {
+    return 'SCOPE';
+  }
+  return 'GENERAL';
+}
+
 /**
  * Compare Draft A vs Draft B and generate reconciled clause set
  */
 function reconcileDrafts(draftAText, draftBText) {
-  const clausesA = parseRawContractText(draftAText || '');
-  const clausesB = parseRawContractText(draftBText || '');
+  const clausesA = parseRawContractText(draftAText || '').map(c => ({
+    ...c,
+    category: c.category && c.category !== 'GENERAL' ? c.category : detectSemanticCategory(c.currentText || c.originalText),
+  }));
+
+  const clausesB = parseRawContractText(draftBText || '').map(c => ({
+    ...c,
+    category: detectSemanticCategory(c.currentText || c.originalText),
+  }));
 
   const reconciledClauses = [];
   const differences = [];
@@ -74,7 +110,7 @@ function reconcileDrafts(draftAText, draftBText) {
   const usedBIndices = new Set();
 
   clausesA.forEach((clauseA, indexA) => {
-    // Attempt to match with clause in B by category or section title
+    // 1. Attempt exact semantic category matching (handles unstructured ordering)
     let matchedClauseB = null;
     let matchIndexB = -1;
 

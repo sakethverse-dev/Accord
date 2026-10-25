@@ -36,6 +36,18 @@ const signAgreement = async (req, res, next) => {
       });
     }
 
+    // AUTHORIZATION CHECK: Only designated signatories (creator or invitedParty) may sign
+    const userId = req.user._id.toString();
+    const isCreator = userId === agreement.creator.toString();
+    const isInvitedParty = agreement.invitedParty && userId === agreement.invitedParty.toString();
+
+    if (!isCreator && !isInvitedParty) {
+      return res.status(403).json({
+        success: false,
+        message: 'FORBIDDEN: You are not a designated signatory in this agreement room.',
+      });
+    }
+
     // Check if this specific user has already signed
     const alreadySigned = agreement.signatures.some(
       (s) => s.signedBy.toString() === req.user._id.toString()
@@ -105,4 +117,58 @@ const signAgreement = async (req, res, next) => {
   }
 };
 
-module.exports = { signAgreement };
+// @desc    Withdraw signature and unfreeze agreement for re-negotiation
+// @route   POST /api/agreements/:id/withdraw-signature
+// @access  Private
+const withdrawSignature = async (req, res, next) => {
+  try {
+    const { id: agreementId } = req.params;
+    const agreement = await Agreement.findById(agreementId);
+    if (!agreement) {
+      return res.status(404).json({ success: false, message: 'Agreement not found.' });
+    }
+
+    if (agreement.status === 'FULLY_EXECUTED_LOCKED') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot withdraw: Agreement has already been fully executed and cryptographically sealed.',
+      });
+    }
+
+    const isParty = req.user._id.toString() === agreement.creator.toString() ||
+                    (agreement.invitedParty && req.user._id.toString() === agreement.invitedParty.toString());
+
+    if (!isParty) {
+      return res.status(403).json({ success: false, message: 'FORBIDDEN: You are not an authorized party in this room.' });
+    }
+
+    const reason = req.body.reason || 'Re-opening collaborative negotiation for term modifications.';
+
+    // Clear signatures to unfreeze terms
+    agreement.signatures = [];
+    agreement.status = 'IN_NEGOTIATION';
+
+    agreement.auditLogs.push({
+      action: 'SIGNATURE_WITHDRAWN_UNFROZEN',
+      performedBy: req.user.name,
+      performedByRole: req.user.role,
+      timestamp: new Date(),
+      details: `Agreement terms unfrozen by ${req.user.name} (${req.user.role}). Reason: ${reason}. Room returned to negotiation.`,
+    });
+
+    await agreement.save();
+
+    res.json({
+      success: true,
+      message: 'Agreement terms unfrozen. Both parties may now resume amendments and compromises.',
+      data: agreement,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { 
+  signAgreement,
+  withdrawSignature,
+};

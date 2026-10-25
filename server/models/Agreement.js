@@ -55,9 +55,13 @@ const clauseSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  compromiseAdoptedBy: {
+    type: String,
+    default: '',
+  },
   status: {
     type: String,
-    enum: ['ORIGINAL', 'PROPOSED', 'RESOLVED', 'OVERRIDDEN'],
+    enum: ['ORIGINAL', 'PROPOSED', 'RESOLVED', 'OVERRIDDEN', 'PENDING_CONFIRMATION'],
     default: 'ORIGINAL',
   },
 }, { _id: false });

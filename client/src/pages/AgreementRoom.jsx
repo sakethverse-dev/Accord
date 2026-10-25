@@ -26,7 +26,9 @@ import {
   FileText,
   Zap,
   RefreshCw,
-  Send
+  Send,
+  RotateCcw,
+  XCircle
 } from 'lucide-react';
 
 export const AgreementRoom = ({ agreementId, onBack }) => {
@@ -66,9 +68,25 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
     }
   };
 
+  const fetchAgreementSilently = async () => {
+    try {
+      const data = await api.agreements.getById(agreementId);
+      setAgreement(data);
+    } catch (err) {
+      // silent background sync
+    }
+  };
+
   useEffect(() => {
     fetchAgreement();
-  }, [agreementId]);
+    // Real-Time Background Synchronization: poll every 3 seconds so both screens stay in sync
+    const pollInterval = setInterval(() => {
+      if (!proposalClause && !diffClause && !showSignModal && !showCertModal && activeRoomTab !== 'input') {
+        fetchAgreementSilently();
+      }
+    }, 3000);
+    return () => clearInterval(pollInterval);
+  }, [agreementId, proposalClause, diffClause, showSignModal, showCertModal, activeRoomTab]);
 
   const handleCopyInvite = () => {
     const inviteUrl = `${window.location.origin}/invite/${agreement?.inviteToken}`;
@@ -101,6 +119,21 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
       await fetchAgreement();
     } catch (err) {
       alert(`Error adopting compromise: ${err.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleWithdrawSignature = async (reason = '') => {
+    if (!window.confirm('Are you sure you want to unfreeze this agreement? This will clear active signatures and return the room to negotiation.')) {
+      return;
+    }
+    setActionLoading(true);
+    try {
+      await api.signatures.withdrawSignature(agreementId, reason);
+      await fetchAgreement();
+    } catch (err) {
+      alert(`Error unfreezing agreement: ${err.message}`);
     } finally {
       setActionLoading(false);
     }
@@ -413,9 +446,10 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
+          flexWrap: 'wrap',
         }}>
           <Lock size={20} color={isLocked ? 'var(--risk-safe)' : 'var(--risk-warning)'} style={{ flexShrink: 0 }} />
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: '280px' }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-main)' }}>
               {isLocked 
                 ? 'Contract Fully Executed & Cryptographically Locked' 
@@ -427,14 +461,39 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                 : `A digital signature was recorded by ${firstSigner?.signerName || 'Party A'} (${new Date(firstSigner?.signedAt).toLocaleDateString()}). Under legal immutability rules, terms are frozen and cannot be edited by either party. Awaiting counter-party signature.`}
             </div>
           </div>
-          {!hasUserSigned && !isLocked && (
-            <button
-              className="btn btn-safe btn-sm"
-              onClick={() => setShowSignModal(true)}
-              style={{ flexShrink: 0 }}
-            >
-              <FileCheck size={13} /> Counter-Sign Agreement
-            </button>
+          
+          {/* Actions to avoid deadlock */}
+          {!isLocked && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              {hasUserSigned ? (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => handleWithdrawSignature('Signer requested term renegotiation')}
+                  disabled={actionLoading}
+                  title="Unfreeze terms to make modifications"
+                >
+                  <RotateCcw size={12} /> Withdraw Signature & Re-open
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="btn btn-safe btn-sm"
+                    onClick={() => setShowSignModal(true)}
+                  >
+                    <FileCheck size={13} /> Counter-Sign Agreement
+                  </button>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleWithdrawSignature('Counterparty requested changes to frozen terms')}
+                    disabled={actionLoading}
+                    style={{ color: 'var(--risk-critical)' }}
+                    title="Decline frozen terms and return room to negotiation"
+                  >
+                    <XCircle size={12} /> Decline & Request Changes
+                  </button>
+                </>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -595,15 +654,32 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                         {!isTermsFrozen ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             {clause.suggestedReplacement && (
-                              <button
-                                className="btn btn-primary btn-sm"
-                                onClick={() => handleAdoptCompromise(clause.clauseId)}
-                                disabled={actionLoading}
-                                id={`btn-adopt-compromise-${clause.clauseId}`}
-                              >
-                                <Zap size={12} />
-                                {actionLoading ? 'Applying...' : 'Adopt AI Compromise'}
-                              </button>
+                              clause.status === 'PENDING_CONFIRMATION' ? (
+                                clause.compromiseAdoptedBy === user?.name ? (
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <Clock size={12} /> You adopted compromise. Awaiting counterparty confirmation.
+                                  </span>
+                                ) : (
+                                  <button
+                                    className="btn btn-safe btn-sm"
+                                    onClick={() => handleAdoptCompromise(clause.clauseId)}
+                                    disabled={actionLoading}
+                                    id={`btn-confirm-compromise-${clause.clauseId}`}
+                                  >
+                                    <Check size={12} /> Confirm & Agree with {clause.compromiseAdoptedBy || 'Counterparty'}
+                                  </button>
+                                )
+                              ) : (
+                                <button
+                                  className="btn btn-primary btn-sm"
+                                  onClick={() => handleAdoptCompromise(clause.clauseId)}
+                                  disabled={actionLoading}
+                                  id={`btn-adopt-compromise-${clause.clauseId}`}
+                                >
+                                  <Zap size={12} />
+                                  {actionLoading ? 'Applying...' : 'Adopt AI Compromise'}
+                                </button>
+                              )
                             )}
 
                             <button

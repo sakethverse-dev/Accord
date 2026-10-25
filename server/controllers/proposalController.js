@@ -238,10 +238,39 @@ const adoptCompromise = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'No AI compromise suggested for this clause.' });
     }
 
-    clause.currentText = clause.suggestedReplacement;
-    clause.status = 'RESOLVED';
-    clause.riskLevel = 'SAFE';
-    clause.hasDraftConflict = false;
+    const hasCounterparty = !!agreement.invitedParty;
+    const isFirstAdoption = !clause.compromiseAdoptedBy || clause.status !== 'PENDING_CONFIRMATION';
+
+    if (hasCounterparty && isFirstAdoption) {
+      // First party adopted the compromise -> mark as PENDING_CONFIRMATION
+      clause.currentText = clause.suggestedReplacement;
+      clause.status = 'PENDING_CONFIRMATION';
+      clause.compromiseAdoptedBy = req.user.name;
+      agreement.status = 'IN_NEGOTIATION';
+
+      agreement.auditLogs.push({
+        action: 'AI_COMPROMISE_PROPOSED',
+        performedBy: req.user.name,
+        performedByRole: req.user.role,
+        timestamp: new Date(),
+        details: `${req.user.name} adopted AI Balanced Compromise for "${clause.title}". Awaiting counterparty confirmation.`,
+      });
+    } else {
+      // Counterparty confirms or no second party yet -> mark as fully RESOLVED
+      clause.currentText = clause.suggestedReplacement;
+      clause.status = 'RESOLVED';
+      clause.riskLevel = 'SAFE';
+      clause.hasDraftConflict = false;
+      clause.compromiseAdoptedBy = '';
+
+      agreement.auditLogs.push({
+        action: 'AI_COMPROMISE_MUTUALLY_AGREED',
+        performedBy: req.user.name,
+        performedByRole: req.user.role,
+        timestamp: new Date(),
+        details: `AI Balanced Compromise mutually confirmed for "${clause.title}" by ${req.user.name}. Term successfully resolved.`,
+      });
+    }
 
     // Recalculate agreement risk
     const newRiskMetrics = calculateAgreementRisk(agreement.clauses);
@@ -249,17 +278,9 @@ const adoptCompromise = async (req, res, next) => {
     agreement.criticalRiskCount = newRiskMetrics.criticalRiskCount;
     agreement.warningRiskCount = newRiskMetrics.warningRiskCount;
 
-    if (newRiskMetrics.criticalRiskCount === 0) {
+    if (newRiskMetrics.criticalRiskCount === 0 && !agreement.clauses.some((c) => c.status === 'PENDING_CONFIRMATION')) {
       agreement.status = 'ALIGNED';
     }
-
-    agreement.auditLogs.push({
-      action: 'AI_COMPROMISE_ADOPTED',
-      performedBy: req.user.name,
-      performedByRole: req.user.role,
-      timestamp: new Date(),
-      details: `AI Balanced Compromise adopted for "${clause.title}". New Alignment Score: ${newRiskMetrics.alignmentScore}%.`,
-    });
 
     await agreement.save();
 
