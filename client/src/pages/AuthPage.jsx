@@ -6,16 +6,14 @@ import {
   User, 
   Briefcase, 
   ArrowRight, 
-  Sparkles, 
   Lock, 
   Sun, 
   Moon, 
-  CheckCircle2, 
   AlertCircle 
 } from 'lucide-react';
 
 export const AuthPage = ({ onAuthSuccess }) => {
-  const { login, register, quickLoginDemo } = useAuth();
+  const { login, register } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const [isRegister, setIsRegister] = useState(false);
@@ -47,19 +45,6 @@ export const AuthPage = ({ onAuthSuccess }) => {
       onAuthSuccess?.();
     } catch (err) {
       setError(err.message || 'Authentication failed. Please verify credentials.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickDemo = async (demoRole) => {
-    setError('');
-    setLoading(true);
-    try {
-      await quickLoginDemo(demoRole);
-      onAuthSuccess?.();
-    } catch (err) {
-      setError(err.message || 'Demo login failed');
     } finally {
       setLoading(false);
     }
@@ -133,7 +118,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
       {/* Main Center Form */}
       <div style={{ width: '100%', maxWidth: '440px', margin: '0 auto' }}>
         {/* Card Header */}
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <h1 style={{ fontSize: '1.65rem', color: 'var(--text-main)', fontWeight: 800, letterSpacing: '-0.025em' }}>
             {isRegister ? 'Create Your Account' : 'Sign in to PactFlow'}
           </h1>
@@ -144,79 +129,12 @@ export const AuthPage = ({ onAuthSuccess }) => {
           </p>
         </div>
 
-        {/* 1-Click Demo Evaluator Access (Visible on Login) */}
-        {!isRegister && (
-          <div style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '12px',
-            padding: '14px 16px',
-            marginBottom: '16px',
-            boxShadow: 'var(--shadow-sm)',
-          }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--accent)', textTransform: 'uppercase', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '8px', letterSpacing: '0.03em' }}>
-              <Sparkles size={12} />
-              Evaluator Instant Access (1-Click Test Login)
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <button
-                type="button"
-                id="btn-evaluator-freelancer"
-                onClick={() => handleQuickDemo('freelancer')}
-                disabled={loading}
-                style={{
-                  background: 'var(--bg-muted)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '8px',
-                  padding: '9px 10px',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <User size={13} color="var(--accent)" />
-                  Alex Rivera
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Freelancer Persona
-                </div>
-              </button>
-
-              <button
-                type="button"
-                id="btn-evaluator-client"
-                onClick={() => handleQuickDemo('client')}
-                disabled={loading}
-                style={{
-                  background: 'var(--bg-muted)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '8px',
-                  padding: '9px 10px',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <Briefcase size={13} color="var(--accent)" />
-                  Sarah Chen
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  Enterprise Client Persona
-                </div>
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Auth Form Card */}
         <div style={{
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-subtle)',
           borderRadius: '14px',
-          padding: '24px',
+          padding: '28px 24px',
           boxShadow: 'var(--shadow-card)',
         }}>
           {/* Segmented Tab: Sign In vs Create Account */}
@@ -371,7 +289,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
                     className="input-field"
                     value={companyOrTitle}
                     onChange={(e) => setCompanyOrTitle(e.target.value)}
-                    placeholder={role === 'client' ? 'e.g. Acme Cloud Corp' : 'e.g. Full-Stack Engineer'}
+                    placeholder={role === 'client' ? 'e.g. Acme Cloud Corp' : 'e.g. Independent Software Consultant'}
                     id="input-register-title"
                   />
                 </div>
@@ -427,7 +345,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
         {/* Security / Compliance Seal */}
         <div style={{
           textAlign: 'center',
-          marginTop: '16px',
+          marginTop: '18px',
           fontSize: '0.72rem',
           color: 'var(--text-muted)',
           display: 'flex',

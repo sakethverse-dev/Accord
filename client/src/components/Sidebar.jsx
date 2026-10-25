@@ -8,15 +8,12 @@ import {
   Sun, 
   Moon, 
   LogOut, 
-  User, 
-  Briefcase, 
   Shield, 
-  Sparkles,
-  ExternalLink
+  FileCheck
 } from 'lucide-react';
 
 export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
-  const { user, logout, quickLoginDemo } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -26,7 +23,7 @@ export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
         {/* Brand Header */}
         <div 
           onClick={() => setCurrentView('dashboard')}
-          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', marginBottom: '24px' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', marginBottom: '28px' }}
         >
           <div style={{
             width: '36px',
@@ -52,7 +49,7 @@ export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
         </div>
 
         {/* Primary Navigation */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
           <div 
             className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`}
             onClick={() => setCurrentView('dashboard')}
@@ -74,90 +71,18 @@ export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
           <div 
             className="nav-item"
             onClick={onOpenSample}
-            id="nav-demo-contract"
-            style={{ color: 'var(--accent)' }}
+            id="nav-standard-template"
+            style={{ color: 'var(--text-secondary)' }}
           >
-            <Sparkles size={16} />
-            <span>Demo Contract</span>
+            <FileCheck size={16} />
+            <span>Standard Template</span>
           </div>
         </nav>
-
-        {/* Sleek Segmented Persona Switcher */}
-        <div style={{
-          marginTop: '24px',
-          padding: '12px',
-          borderRadius: '10px',
-          background: 'var(--bg-muted)',
-          border: '1px solid var(--border-subtle)',
-        }}>
-          <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.04em' }}>
-            Testing Persona:
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '4px',
-            background: 'var(--bg-surface)',
-            padding: '3px',
-            borderRadius: '8px',
-            border: '1px solid var(--border-subtle)',
-          }}>
-            <button
-              onClick={() => quickLoginDemo('freelancer')}
-              id="btn-switch-freelancer"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '5px',
-                padding: '7px 4px',
-                borderRadius: '6px',
-                border: 'none',
-                background: user?.role === 'freelancer' ? 'var(--primary)' : 'transparent',
-                color: user?.role === 'freelancer' ? '#ffffff' : 'var(--text-muted)',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <User size={12} />
-              <span>Freelancer</span>
-            </button>
-
-            <button
-              onClick={() => quickLoginDemo('client')}
-              id="btn-switch-client"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '5px',
-                padding: '7px 4px',
-                borderRadius: '6px',
-                border: 'none',
-                background: user?.role === 'client' ? 'var(--primary)' : 'transparent',
-                color: user?.role === 'client' ? '#ffffff' : 'var(--text-muted)',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <Briefcase size={12} />
-              <span>Client</span>
-            </button>
-          </div>
-          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '6px', textAlign: 'center' }}>
-            Switch roles to test dual consensus
-          </div>
-        </div>
       </div>
 
       {/* Bottom Area: Security Badge, Profile, Dark Mode */}
       <div>
-        {/* Verification Badge */}
+        {/* Institutional Verification Badge */}
         <div style={{
           padding: '10px 12px',
           borderRadius: '8px',
@@ -186,8 +111,8 @@ export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
             <div style={{
-              width: '30px',
-              height: '30px',
+              width: '32px',
+              height: '32px',
               borderRadius: '50%',
               background: 'var(--primary)',
               color: '#ffffff',
@@ -195,14 +120,19 @@ export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 700,
-              fontSize: '0.75rem',
+              fontSize: '0.78rem',
               flexShrink: 0,
             }}>
               {user?.name?.charAt(0) || 'U'}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.name}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user?.name}
+                </span>
+                <span className="badge badge-primary" style={{ fontSize: '0.62rem', padding: '1px 5px', textTransform: 'capitalize' }}>
+                  {user?.role}
+                </span>
               </div>
               <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.email}
@@ -212,20 +142,22 @@ export const Sidebar = ({ currentView, setCurrentView, onOpenSample }) => {
 
           <button
             onClick={logout}
+            id="btn-sidebar-logout"
             style={{
               background: 'transparent',
               border: 'none',
               color: 'var(--text-dim)',
               cursor: 'pointer',
-              padding: '4px',
+              padding: '6px',
+              borderRadius: '6px',
             }}
             title="Logout"
           >
-            <LogOut size={15} />
+            <LogOut size={16} />
           </button>
         </div>
 
-        {/* Dark Mode Switcher */}
+        {/* Theme Toggle */}
         <div style={{
           display: 'flex',
           alignItems: 'center',

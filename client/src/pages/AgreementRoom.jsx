@@ -215,7 +215,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px', display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <span>Party A ({agreement.creator?.role === 'client' ? 'Client' : 'Contractor'}): <strong style={{ color: 'var(--text-main)' }}>{agreement.creator?.name}</strong></span>
               <span>•</span>
-              <span>Party B ({agreement.creator?.role === 'client' ? 'Contractor' : 'Client'}): <strong style={{ color: 'var(--text-main)' }}>{agreement.invitedParty?.name || (agreement.creator?.role === 'client' ? 'Alex Rivera' : 'Sarah Chen')}</strong></span>
+              <span>Party B ({agreement.creator?.role === 'client' ? 'Contractor' : 'Client'}): <strong style={{ color: 'var(--text-main)' }}>{agreement.invitedParty?.name || agreement.invitedEmail || 'Counterparty (Pending)'}</strong></span>
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Document Reference: <span style={{ fontFamily: 'var(--font-mono)' }}>{refId}</span> • Enforced under ESIGN & UETA Framework
@@ -431,7 +431,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                       Party B ({agreement.creator?.role === 'client' ? 'Contractor' : 'Client'})
                     </div>
                     <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
-                      {agreement.invitedParty?.name || (agreement.creator?.role === 'client' ? 'Alex Rivera' : 'Sarah Chen')}
+                      {agreement.invitedParty?.name || agreement.invitedEmail || 'Pending Counterparty'}
                     </div>
 
                     {sigPartyB ? (

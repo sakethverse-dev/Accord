@@ -56,7 +56,7 @@ export const Dashboard = ({ onSelectAgreement }) => {
       const newAgreement = await api.agreements.create({ useSample: true });
       onSelectAgreement(newAgreement._id);
     } catch (err) {
-      alert(`Error loading sample contract: ${err.message}`);
+      alert(`Error loading agreement template: ${err.message}`);
     } finally {
       setCreatingSample(false);
     }
@@ -132,8 +132,8 @@ export const Dashboard = ({ onSelectAgreement }) => {
             disabled={creatingSample}
             id="btn-load-sample-contract"
           >
-            <Sparkles size={14} color="var(--accent)" />
-            {creatingSample ? 'Auditing Contract...' : 'Load Demo Contract'}
+            <FileCheck size={14} color="var(--accent)" />
+            {creatingSample ? 'Generating Template...' : 'Standard Template'}
           </button>
 
           <button
@@ -274,11 +274,11 @@ export const Dashboard = ({ onSelectAgreement }) => {
           <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', maxWidth: '360px', margin: '0 auto 16px' }}>
             {activeFilter !== 'ALL' 
               ? 'No contracts match the selected filter criteria.' 
-              : 'Create a new agreement or load the pre-audited demo contract to get started.'}
+              : 'Create a new agreement or load a standard agreement template to get started.'}
           </p>
           <button className="btn btn-primary btn-sm" onClick={handleCreateSample} style={{ margin: '0 auto' }}>
-            <Sparkles size={13} />
-            Load Pre-Configured Demo Contract
+            <FileCheck size={13} />
+            Load Standard Template
           </button>
         </div>
       ) : (

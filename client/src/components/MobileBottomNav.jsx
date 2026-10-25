@@ -1,19 +1,11 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { FileText, Sliders, Plus, User, Moon, Sun } from 'lucide-react';
+import { FileText, Sliders, Plus, LogOut, Moon, Sun } from 'lucide-react';
 
 export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
-  const { user, quickLoginDemo } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-
-  const handleTogglePersona = () => {
-    if (user?.role === 'freelancer') {
-      quickLoginDemo('client');
-    } else {
-      quickLoginDemo('freelancer');
-    }
-  };
 
   return (
     <nav className="mobile-bottom-nav">
@@ -57,18 +49,18 @@ export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
         <span>Policies</span>
       </button>
 
-      {/* 3. Center Floating Action Button (+) (Matching Image 2) */}
+      {/* 3. Center Floating Action Button (+) */}
       <button
         onClick={onOpenNew}
         className="mobile-fab-center"
-        title="Add or Load Contract"
+        title="New Agreement"
       >
         <Plus size={24} />
       </button>
 
-      {/* 4. Switch Persona */}
+      {/* 4. Sign Out */}
       <button
-        onClick={handleTogglePersona}
+        onClick={logout}
         style={{
           background: 'transparent',
           border: 'none',
@@ -81,10 +73,10 @@ export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
           fontWeight: 600,
           cursor: 'pointer',
         }}
-        title="Switch Role"
+        title="Sign Out"
       >
-        <User size={18} />
-        <span>{user?.role === 'freelancer' ? 'Alex' : 'Sarah'}</span>
+        <LogOut size={18} />
+        <span>Sign Out</span>
       </button>
 
       {/* 5. Theme Toggle */}

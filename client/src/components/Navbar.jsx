@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, User, Sliders, LogOut, Briefcase, CheckCircle2 } from 'lucide-react';
+import { Shield, CheckCircle2, Sliders, LogOut } from 'lucide-react';
 
 export const Navbar = ({ currentView, setCurrentView }) => {
-  const { user, logout, quickLoginDemo } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <header style={{
@@ -71,61 +71,6 @@ export const Navbar = ({ currentView, setCurrentView }) => {
             gap: '10px',
             flexWrap: 'wrap',
           }}>
-            {/* Quick Demo Switcher */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              background: 'rgba(14, 21, 38, 0.85)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '8px',
-              padding: '3px',
-              gap: '3px',
-            }}>
-              <button
-                id="btn-switch-freelancer"
-                onClick={() => quickLoginDemo('freelancer')}
-                style={{
-                  background: user.role === 'freelancer' ? 'rgba(79, 70, 229, 0.3)' : 'transparent',
-                  color: user.role === 'freelancer' ? '#ffffff' : 'var(--text-muted)',
-                  border: user.role === 'freelancer' ? '1px solid rgba(99, 102, 241, 0.5)' : '1px solid transparent',
-                  borderRadius: '6px',
-                  padding: '4px 8px',
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                <User size={11} />
-                Alex (Freelancer)
-              </button>
-
-              <button
-                id="btn-switch-client"
-                onClick={() => quickLoginDemo('client')}
-                style={{
-                  background: user.role === 'client' ? 'rgba(124, 58, 237, 0.3)' : 'transparent',
-                  color: user.role === 'client' ? '#ffffff' : 'var(--text-muted)',
-                  border: user.role === 'client' ? '1px solid rgba(139, 92, 246, 0.5)' : '1px solid transparent',
-                  borderRadius: '6px',
-                  padding: '4px 8px',
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                <Briefcase size={11} />
-                Sarah (Client)
-              </button>
-            </div>
-
             {/* Policy Profile Trigger */}
             <button
               id="btn-nav-policy"

@@ -53,23 +53,6 @@ export const AuthProvider = ({ children }) => {
     return updatedPolicy;
   };
 
-  // Instant 1-Click Demo Switcher (Alex Rivera vs Sarah Chen)
-  const quickLoginDemo = async (role) => {
-    setLoading(true);
-    try {
-      const email = role === 'client' ? 'client@pactflow.dev' : 'freelancer@pactflow.dev';
-      const password = 'password123';
-      const userData = await api.auth.login(email, password);
-      setUser(userData);
-      return userData;
-    } catch (err) {
-      console.error('Quick demo login error:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -79,7 +62,6 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updatePolicy,
-        quickLoginDemo,
       }}
     >
       {children}

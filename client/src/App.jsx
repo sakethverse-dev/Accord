@@ -38,7 +38,7 @@ const AppContent = () => {
       setActiveAgreementId(newAgreement._id);
       setCurrentView('room');
     } catch (err) {
-      alert(`Error loading demo contract: ${err.message}`);
+      alert(`Error loading standard template: ${err.message}`);
     }
   };
 
