@@ -221,7 +221,79 @@ Both parties shall hold all disclosed technical, commercial, and financial infor
 Section 8. Governing Law & Dispute Resolution
 This Agreement shall be governed by Delaware commercial law, with binding arbitration in Wilmington, Delaware.`;
 
+/**
+ * AI-First Multi-Draft Reconciliation powered by Gemini
+ */
+async function reconcileDraftsAsync(draftAText, draftBText, creatorRole = 'freelancer', invitedRole = 'client') {
+  try {
+    const { analyzeAndReconcileDraftsWithAI } = require('./geminiAiService');
+    const aiResult = await analyzeAndReconcileDraftsWithAI(draftAText, draftBText, creatorRole, invitedRole);
+
+    if (aiResult && Array.isArray(aiResult.clauses) && aiResult.clauses.length > 0) {
+      const reconciledClauses = [];
+      const differences = [];
+
+      aiResult.clauses.forEach((c, idx) => {
+        const clauseId = `clause-${idx + 1}`;
+        const textA = (c.partyAText || c.currentText || '').trim();
+        const textB = (c.partyBText || '').trim();
+        const hasDiff = (textB !== '' && textA !== textB) || (c.riskLevel && c.riskLevel !== 'SAFE') || Boolean(c.suggestedReplacement && c.riskReason);
+        const diffTokens = hasDiff && textB !== '' && textA !== '' ? computeWordDiff(textA, textB) : [];
+
+        const clauseObj = {
+          clauseId,
+          sectionNumber: c.sectionNumber || `Section ${idx + 1}`,
+          title: c.title || `Clause ${idx + 1}`,
+          category: c.category || 'GENERAL',
+          originalText: textA || c.currentText || '',
+          currentText: textA || c.currentText || '',
+          partyAText: textA || c.currentText || '',
+          partyBText: textB || textA || c.currentText || '',
+          hasDraftConflict: hasDiff,
+          diffTokens,
+          riskLevel: c.riskLevel || (hasDiff ? 'WARNING' : 'SAFE'),
+          riskReason: c.riskReason || '',
+          suggestedReplacement: c.suggestedReplacement || '',
+          status: hasDiff ? 'PROPOSED' : 'RESOLVED',
+        };
+
+        if (hasDiff) {
+          differences.push({
+            clauseId,
+            category: clauseObj.category,
+            title: clauseObj.title,
+            partyATerm: textA,
+            partyBTerm: textB,
+            diffTokens,
+            compromiseRecommendation: c.suggestedReplacement || '',
+            reason: c.riskReason || 'Differences identified by Gemini AI analysis.',
+            status: 'FLAGGED',
+          });
+        }
+
+        reconciledClauses.push(clauseObj);
+      });
+
+      return {
+        clauses: reconciledClauses,
+        differences,
+        totalDifferences: differences.length,
+        alignmentScore: typeof aiResult.alignmentScore === 'number' ? aiResult.alignmentScore : undefined,
+        summary: aiResult.summary || '',
+        poweredBy: 'gemini-2.5-flash',
+      };
+    }
+  } catch (err) {
+    console.warn('[ClauseReconciliation] Gemini AI analysis failed, falling back to deterministic reconciliation:', err.message);
+  }
+
+  // Graceful fallback to deterministic parsing
+  return reconcileDrafts(draftAText, draftBText);
+}
+
 module.exports = {
   reconcileDrafts,
+  reconcileDraftsAsync,
   ORGANIZATION_COUNTER_DRAFT,
 };
+

@@ -687,8 +687,8 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                               onClick={() => setProposalClause(clause)}
                               id={`btn-propose-${clause.clauseId}`}
                             >
-                              <Edit3 size={11} />
-                              Propose Custom Term
+                              <Sparkles size={11} color="#3b82f6" />
+                              AI Rewrite / Propose Term
                             </button>
 
                             {clause.diffTokens && clause.diffTokens.length > 0 && (
@@ -1028,7 +1028,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             {agreement.clauses?.map((clause, idx) => {
               const textA = clause.partyAText || clause.originalText;
               const textB = clause.partyBText || clause.currentText;
-              const isDiff = textA !== textB;
+              const isDiff = clause.hasDraftConflict || clause.riskLevel === 'WARNING' || clause.riskLevel === 'CRITICAL' || (Boolean(textB) && textA !== textB);
 
               return (
                 <div key={clause.clauseId} style={{
@@ -1137,11 +1137,16 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           margin: '0 auto',
         }}>
           <div style={{ marginBottom: '18px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              Input & Compare Counterparty Version
-            </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-              Paste your organization or freelancer version of the contract below. PactFlow will analyze both drafts, identify every conflicting term, and synthesize fair AI compromises.
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+                Input & Compare Counterparty Version
+              </h3>
+              <span style={{ fontSize: '0.72rem', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.25)', padding: '2px 8px', borderRadius: '12px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Zap size={11} /> Gemini 2.5 Flash
+              </span>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+              Paste your organization or freelancer counter-draft below. Google Gemini AI reads both drafts dynamically—with no rigid fixed rules—detects differences, calculates risks, and writes balanced compromises tailored to your exact terms.
             </p>
           </div>
 
@@ -1188,7 +1193,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                   disabled={actionLoading || !counterDraftInput.trim()}
                 >
                   <Zap size={14} />
-                  {actionLoading ? 'Analyzing Differences with AI...' : 'Analyze & Reconcile Both Versions'}
+                  {actionLoading ? 'Analyzing Differences with Gemini AI...' : 'Analyze & Reconcile with Gemini AI'}
                 </button>
               </div>
             </div>
@@ -1203,6 +1208,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           isOpen={!!proposalClause}
           onClose={() => setProposalClause(null)}
           onSubmitProposal={handleProposalSubmit}
+          agreementId={agreementId}
         />
       )}
 

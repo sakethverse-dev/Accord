@@ -146,6 +146,16 @@ export const api = {
       return data.data;
     },
 
+    improveWithAI: async (agreementId, clauseId, { instruction } = {}) => {
+      const res = await fetch(`${API_BASE}/agreements/${agreementId}/clauses/${clauseId}/ai-improve`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ instruction }),
+      });
+      const data = await handleResponse(res);
+      return data.data;
+    },
+
     respond: async (agreementId, proposalId, action) => {
       const res = await fetch(`${API_BASE}/agreements/${agreementId}/proposals/${proposalId}/respond`, {
         method: 'POST',
@@ -166,6 +176,7 @@ export const api = {
       return data.data;
     },
   },
+
 
   // Digital Signatures
   signatures: {

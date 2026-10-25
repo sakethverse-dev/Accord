@@ -5,7 +5,8 @@ const { SAMPLE_CONTRACT, parseRawContractText } = require('../services/clauseExt
 const { evaluateClause } = require('../services/policyEngine');
 const { calculateAgreementRisk } = require('../services/riskCalculator');
 const { verifyDocumentIntegrity } = require('../services/cryptoSeal');
-const { reconcileDrafts, ORGANIZATION_COUNTER_DRAFT } = require('../services/clauseReconciliation');
+const { reconcileDrafts, reconcileDraftsAsync, ORGANIZATION_COUNTER_DRAFT } = require('../services/clauseReconciliation');
+const { auditDraftWithAI } = require('../services/geminiAiService');
 
 // @desc    Create a new agreement or load demo contract
 // @route   POST /api/agreements
@@ -13,36 +14,69 @@ const { reconcileDrafts, ORGANIZATION_COUNTER_DRAFT } = require('../services/cla
 const createAgreement = async (req, res, next) => {
   try {
     const { title, rawText, useSample } = req.body;
+    const user = await User.findById(req.user._id);
 
     let agreementTitle = title || 'Software Development Services Agreement';
-    let rawClauses = [];
+    let auditedClauses = [];
+    let initialScore = 80;
 
-    if (useSample) {
-      agreementTitle = SAMPLE_CONTRACT.title;
-      rawClauses = JSON.parse(JSON.stringify(SAMPLE_CONTRACT.clauses));
-    } else if (rawText && rawText.trim() !== '') {
-      rawClauses = parseRawContractText(rawText);
-    } else {
-      agreementTitle = SAMPLE_CONTRACT.title;
-      rawClauses = JSON.parse(JSON.stringify(SAMPLE_CONTRACT.clauses));
+    if (!useSample && rawText && rawText.trim() !== '') {
+      // Rule-Free AI Dynamic Audit
+      try {
+        const aiAudit = await auditDraftWithAI(rawText, user?.role || 'freelancer');
+        if (aiAudit && Array.isArray(aiAudit.clauses) && aiAudit.clauses.length > 0) {
+          if (aiAudit.title && !title) agreementTitle = aiAudit.title;
+          auditedClauses = aiAudit.clauses.map((c, idx) => ({
+            clauseId: `clause-${idx + 1}`,
+            sectionNumber: c.sectionNumber || `Section ${idx + 1}`,
+            title: c.title || `Clause ${idx + 1}`,
+            category: c.category || 'GENERAL',
+            originalText: c.currentText || '',
+            currentText: c.currentText || '',
+            partyAText: c.currentText || '',
+            partyBText: '',
+            hasDraftConflict: false,
+            diffTokens: [],
+            riskLevel: c.riskLevel || 'SAFE',
+            riskReason: c.riskReason || '',
+            suggestedReplacement: c.suggestedReplacement || '',
+            status: 'ORIGINAL',
+          }));
+        }
+      } catch (err) {
+        console.warn('[CreateAgreement] Gemini AI audit error, using fallback:', err.message);
+      }
     }
 
-    // Run deterministic policy audit on each clause
-    const user = await User.findById(req.user._id);
-    const auditedClauses = rawClauses.map((clause) => {
-      const evaluation = evaluateClause(clause, user.policyProfile, null);
-      return {
-        ...clause,
-        category: evaluation.category,
-        riskLevel: evaluation.riskLevel,
-        riskReason: evaluation.riskReason,
-        suggestedReplacement: evaluation.suggestedReplacement,
-        status: 'ORIGINAL',
-      };
-    });
+    // Fallback or Sample if AI audit did not produce clauses
+    if (auditedClauses.length === 0) {
+      let rawClauses = [];
+      if (useSample) {
+        agreementTitle = SAMPLE_CONTRACT.title;
+        rawClauses = JSON.parse(JSON.stringify(SAMPLE_CONTRACT.clauses));
+      } else if (rawText && rawText.trim() !== '') {
+        rawClauses = parseRawContractText(rawText);
+      } else {
+        agreementTitle = SAMPLE_CONTRACT.title;
+        rawClauses = JSON.parse(JSON.stringify(SAMPLE_CONTRACT.clauses));
+      }
+
+      auditedClauses = rawClauses.map((clause) => {
+        const evaluation = evaluateClause(clause, user.policyProfile, null);
+        return {
+          ...clause,
+          category: evaluation.category,
+          riskLevel: evaluation.riskLevel,
+          riskReason: evaluation.riskReason,
+          suggestedReplacement: evaluation.suggestedReplacement,
+          status: 'ORIGINAL',
+        };
+      });
+    }
 
     // Calculate overall risk score
     const riskMetrics = calculateAgreementRisk(auditedClauses);
+
 
     const inviteToken = crypto.randomBytes(8).toString('hex');
     const initialDraftText = rawText || rawClauses.map((c) => `${c.sectionNumber || ''} ${c.title}\n${c.currentText}`).join('\n\n');
@@ -273,14 +307,20 @@ const compareDrafts = async (req, res, next) => {
       };
     }
 
-    // Run AI Multi-Draft Clause Reconciliation Engine
-    const reconciled = reconcileDrafts(textA, textB || textA);
+    // Determine participant roles for contextual AI reasoning
+    const creatorUser = await User.findById(agreement.creator);
+    const invitedUser = agreement.invitedParty ? await User.findById(agreement.invitedParty) : null;
+    const creatorRole = creatorUser?.role || 'freelancer';
+    const invitedRole = invitedUser?.role || (creatorRole === 'freelancer' ? 'client' : 'freelancer');
+
+    // Run Gemini AI Multi-Draft Clause Reconciliation Engine
+    const reconciled = await reconcileDraftsAsync(textA, textB || textA, creatorRole, invitedRole);
 
     agreement.clauses = reconciled.clauses;
     agreement.differences = reconciled.differences;
 
     const riskMetrics = calculateAgreementRisk(agreement.clauses);
-    agreement.alignmentScore = riskMetrics.alignmentScore;
+    agreement.alignmentScore = reconciled.alignmentScore !== undefined ? reconciled.alignmentScore : riskMetrics.alignmentScore;
     agreement.criticalRiskCount = riskMetrics.criticalRiskCount;
     agreement.warningRiskCount = riskMetrics.warningRiskCount;
     agreement.status = 'IN_NEGOTIATION';
@@ -290,7 +330,7 @@ const compareDrafts = async (req, res, next) => {
       performedBy: req.user.name,
       performedByRole: req.user.role,
       timestamp: new Date(),
-      details: `AI Multi-Draft analysis executed comparing Party A & Party B drafts. ${reconciled.totalDifferences} differing terms detected and balanced compromises generated.`,
+      details: `Gemini AI Multi-Draft analysis executed comparing Party A & Party B drafts. ${reconciled.totalDifferences} differing terms detected and balanced compromises generated without fixed rules.`,
     });
 
     await agreement.save();

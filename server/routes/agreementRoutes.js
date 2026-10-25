@@ -13,6 +13,7 @@ const {
   respondToProposal,
   getDiff,
   adoptCompromise,
+  improveClauseWithAIController,
 } = require('../controllers/proposalController');
 const { signAgreement, withdrawSignature } = require('../controllers/signatureController');
 const { protect } = require('../middleware/authMiddleware');
@@ -30,8 +31,10 @@ router.post('/:id/compare-drafts', protect, compareDrafts);
 // Negotiation & Proposals
 router.post('/:id/clauses/:clauseId/propose', protect, submitProposal);
 router.post('/:id/clauses/:clauseId/adopt-compromise', protect, adoptCompromise);
+router.post('/:id/clauses/:clauseId/ai-improve', protect, improveClauseWithAIController);
 router.post('/:id/proposals/:proposalId/respond', protect, respondToProposal);
 router.post('/diff', protect, getDiff);
+
 
 // Digital Signatures
 router.post('/:id/sign', protect, signAgreement);

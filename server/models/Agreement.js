@@ -15,7 +15,6 @@ const clauseSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['PAYMENT', 'LIABILITY', 'IP_OWNERSHIP', 'NON_COMPETE', 'WARRANTY', 'TERMINATION', 'GENERAL'],
     default: 'GENERAL',
   },
   originalText: {

@@ -294,9 +294,46 @@ const adoptCompromise = async (req, res, next) => {
   }
 };
 
+// @desc    Use Gemini AI to improve or rewrite a clause based on user instructions
+// @route   POST /api/agreements/:id/clauses/:clauseId/ai-improve
+// @access  Private
+const improveClauseWithAIController = async (req, res, next) => {
+  try {
+    const { id: agreementId, clauseId } = req.params;
+    const { instruction } = req.body;
+
+    const agreement = await Agreement.findById(agreementId);
+    if (!agreement) {
+      return res.status(404).json({ success: false, message: 'Agreement not found.' });
+    }
+
+    const clause = agreement.clauses.find((c) => c.clauseId === clauseId);
+    if (!clause) {
+      return res.status(404).json({ success: false, message: 'Clause not found in agreement.' });
+    }
+
+    const { improveClauseWithAI } = require('../services/geminiAiService');
+    const result = await improveClauseWithAI({
+      clauseTitle: clause.title,
+      currentText: clause.currentText || clause.originalText,
+      instruction: instruction || 'Make this clause balanced, fair, and clear for both parties.',
+      userRole: req.user.role || 'freelancer',
+    });
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   submitProposal,
   respondToProposal,
   getDiff,
   adoptCompromise,
+  improveClauseWithAIController,
 };
+
