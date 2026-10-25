@@ -1,0 +1,28 @@
+{
+  "name": "pactflow",
+  "version": "1.0.0",
+  "description": "PactFlow - Collaborative Contract Risk & Negotiation Room for Freelancers and Clients",
+  "main": "server/server.js",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "node server/server.js",
+    "build": "npm run build --prefix client"
+  },
+  "keywords": [
+    "contract-management",
+    "negotiation",
+    "freelance",
+    "risk-scoring",
+    "legal-tech",
+    "audit-trail",
+    "esign"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
