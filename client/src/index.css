@@ -206,57 +206,166 @@ code, pre {
   font-weight: 700;
 }
 
-/* Reference-Style Cards */
-.contract-card {
+/* Institutional Metric Cards */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-tile {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+.metric-tile:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-card);
+}
+.metric-tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.metric-tile-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.metric-tile-val {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.1;
+  font-family: var(--font-heading);
+}
+.metric-tile-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Institutional Enterprise Contracts Table */
+.contracts-table-container {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
   box-shadow: var(--shadow-card);
-  padding: 20px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  overflow-x: auto;
 }
-.contract-card:hover {
-  border-color: var(--border-medium);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+.contracts-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
 }
-
-/* Spec Data Grid inside Card (Matching Image 1) */
-.spec-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 14px;
-  padding: 14px 0;
-  border-top: 1px solid var(--border-subtle);
+.contracts-table thead tr {
+  background: var(--bg-muted);
   border-bottom: 1px solid var(--border-subtle);
-  margin: 14px 0;
 }
-
-.spec-item {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.spec-label {
+.contracts-table th {
+  padding: 12px 18px;
   font-size: 0.72rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.spec-value {
-  font-size: 0.88rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+.contracts-table tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+.contracts-table tbody tr:last-child {
+  border-bottom: none;
+}
+.contracts-table tbody tr:hover {
+  background-color: var(--bg-surface-hover);
+}
+.contracts-table td {
+  padding: 16px 18px;
+  vertical-align: middle;
 }
 
-/* Horizontal Filter Tabs (Matching Image 1 & 2) */
+/* Legal Document Canvas */
+.legal-doc-paper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  padding: 44px 48px;
+  position: relative;
+}
+@media (max-width: 768px) {
+  .legal-doc-paper {
+    padding: 24px 20px;
+  }
+}
+
+.clause-item {
+  position: relative;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+.clause-item:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-subtle);
+}
+.clause-item.has-critical {
+  border-left: 3px solid var(--risk-critical);
+  background: rgba(239, 68, 68, 0.02);
+}
+.clause-item.has-warning {
+  border-left: 3px solid var(--risk-warning);
+  background: rgba(245, 158, 11, 0.02);
+}
+.clause-item.is-resolved {
+  border-left: 3px solid var(--risk-safe);
+  background: rgba(16, 185, 129, 0.02);
+}
+
+.clause-audit-note {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.8rem;
+  border: 1px solid;
+}
+.clause-audit-note.critical {
+  background: var(--risk-critical-bg);
+  border-color: var(--risk-critical-border);
+  color: var(--risk-critical-text);
+}
+.clause-audit-note.warning {
+  background: var(--risk-warning-bg);
+  border-color: var(--risk-warning-border);
+  color: var(--risk-warning-text);
+}
+.clause-audit-note.safe {
+  background: var(--risk-safe-bg);
+  border-color: var(--risk-safe-border);
+  color: var(--risk-safe-text);
+}
+
+/* Horizontal Filter Tabs */
 .filter-tabs {
   display: flex;
   align-items: center;

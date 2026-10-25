@@ -6,17 +6,18 @@ import {
   Sparkles, 
   Plus, 
   ArrowRight, 
-  CheckCircle, 
+  CheckCircle2, 
   Clock, 
   Lock, 
   Users, 
   RefreshCw,
   ShieldCheck,
   Search,
-  Filter,
-  CheckCircle2,
+  AlertTriangle,
   ExternalLink,
-  Info
+  ShieldAlert,
+  ChevronRight,
+  FileCheck
 } from 'lucide-react';
 
 export const Dashboard = ({ onSelectAgreement }) => {
@@ -29,7 +30,7 @@ export const Dashboard = ({ onSelectAgreement }) => {
   const [customText, setCustomText] = useState('');
   const [creatingCustom, setCreatingCustom] = useState(false);
   
-  // Filter state (Matching Image 1 & 2)
+  // Filter state
   const [activeFilter, setActiveFilter] = useState('ALL'); // 'ALL' | 'ACTION' | 'NEGOTIATION' | 'SEALED'
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -83,10 +84,17 @@ export const Dashboard = ({ onSelectAgreement }) => {
     }
   };
 
-  // Filter agreements
+  // Metrics
+  const totalCount = agreements.length;
+  const actionCount = agreements.filter((a) => (a.criticalRiskCount || 0) > 0 && a.status !== 'FULLY_EXECUTED_LOCKED').length;
+  const negotiationCount = agreements.filter((a) => a.status === 'IN_NEGOTIATION' && (a.criticalRiskCount || 0) === 0).length;
+  const sealedCount = agreements.filter((a) => a.status === 'FULLY_EXECUTED_LOCKED').length;
+
+  // Filtered agreements
   const filteredAgreements = agreements.filter((agreement) => {
     const matchesSearch = agreement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          agreement.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+                          agreement.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          agreement.invitedParty?.name?.toLowerCase().includes(searchQuery.toLowerCase());
     
     if (!matchesSearch) return false;
 
@@ -96,67 +104,100 @@ export const Dashboard = ({ onSelectAgreement }) => {
     return true;
   });
 
-  const activeAgreements = filteredAgreements.filter((a) => a.status !== 'FULLY_EXECUTED_LOCKED');
-  const sealedAgreements = agreements.filter((a) => a.status === 'FULLY_EXECUTED_LOCKED');
-
   return (
     <div style={{ width: '100%' }}>
-      {/* Top Header Banner (Matching Image 1) */}
+      {/* 1. Header Row */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '26px',
+        marginBottom: '24px',
         flexWrap: 'wrap',
-        gap: '14px',
+        gap: '16px',
       }}>
         <div>
-          <h1 style={{ fontSize: '1.85rem', color: 'var(--text-main)', fontWeight: 800 }}>
-            My contracts
+          <h1 style={{ fontSize: '1.75rem', color: 'var(--text-main)', fontWeight: 800, letterSpacing: '-0.025em' }}>
+            Agreements
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-            Here you can find all your negotiated and executed legal contracts
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+            Review, negotiate, and cryptographically execute mutual legal contracts
           </p>
         </div>
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
-            className="btn btn-primary"
+            className="btn btn-secondary"
             onClick={handleCreateSample}
             disabled={creatingSample}
             id="btn-load-sample-contract"
           >
-            <Sparkles size={15} />
-            {creatingSample ? 'Auditing Demo...' : '⚡ 1-Click Load Demo Contract'}
+            <Sparkles size={14} color="var(--accent)" />
+            {creatingSample ? 'Auditing Contract...' : 'Load Demo Contract'}
           </button>
 
           <button
-            className="btn btn-secondary"
+            className="btn btn-primary"
             onClick={() => setShowCustomModal(true)}
             id="btn-create-custom-contract"
           >
             <Plus size={15} />
-            Add contract
+            New Agreement
           </button>
         </div>
       </div>
 
-      {/* Actual Contracts Sub-header */}
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: 700 }}>
-          Actual contracts
-        </h3>
+      {/* 2. Institutional Executive Metrics Bar */}
+      <div className="metrics-row">
+        <div className="metric-tile" onClick={() => setActiveFilter('ALL')} style={{ cursor: 'pointer' }}>
+          <div className="metric-tile-header">
+            <span className="metric-tile-label">Total Contracts</span>
+            <FileText size={16} color="var(--text-muted)" />
+          </div>
+          <div className="metric-tile-val">{totalCount}</div>
+          <div className="metric-tile-sub">Active in workspace</div>
+        </div>
+
+        <div className="metric-tile" onClick={() => setActiveFilter('ACTION')} style={{ cursor: 'pointer' }}>
+          <div className="metric-tile-header">
+            <span className="metric-tile-label">Requires Action</span>
+            <AlertTriangle size={16} color={actionCount > 0 ? "var(--risk-critical)" : "var(--text-muted)"} />
+          </div>
+          <div className="metric-tile-val" style={{ color: actionCount > 0 ? 'var(--risk-critical)' : 'var(--text-main)' }}>
+            {actionCount}
+          </div>
+          <div className="metric-tile-sub">Policy deviations flagged</div>
+        </div>
+
+        <div className="metric-tile" onClick={() => setActiveFilter('NEGOTIATION')} style={{ cursor: 'pointer' }}>
+          <div className="metric-tile-header">
+            <span className="metric-tile-label">In Negotiation</span>
+            <Clock size={16} color="var(--accent)" />
+          </div>
+          <div className="metric-tile-val">{negotiationCount}</div>
+          <div className="metric-tile-sub">Active compromise discussions</div>
+        </div>
+
+        <div className="metric-tile" onClick={() => setActiveFilter('SEALED')} style={{ cursor: 'pointer' }}>
+          <div className="metric-tile-header">
+            <span className="metric-tile-label">Executed & Sealed</span>
+            <ShieldCheck size={16} color="var(--risk-safe)" />
+          </div>
+          <div className="metric-tile-val" style={{ color: 'var(--risk-safe)' }}>
+            {sealedCount}
+          </div>
+          <div className="metric-tile-sub">Cryptographically verified</div>
+        </div>
       </div>
 
-      {/* Filter Tabs & Search Bar Row (Matching Image 1 & 2) */}
+      {/* 3. Filter Tabs & Search Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '14px',
-        marginBottom: '22px',
+        gap: '12px',
+        marginBottom: '16px',
       }}>
         {/* Filter Pills */}
         <div className="filter-tabs">
@@ -164,25 +205,25 @@ export const Dashboard = ({ onSelectAgreement }) => {
             className={`filter-tab ${activeFilter === 'ALL' ? 'active' : ''}`}
             onClick={() => setActiveFilter('ALL')}
           >
-            All ({agreements.length})
+            All ({totalCount})
           </button>
           <button
             className={`filter-tab ${activeFilter === 'ACTION' ? 'active' : ''}`}
             onClick={() => setActiveFilter('ACTION')}
           >
-            Require action ({agreements.filter((a) => (a.criticalRiskCount || 0) > 0 && a.status !== 'FULLY_EXECUTED_LOCKED').length})
+            Needs Review ({actionCount})
           </button>
           <button
             className={`filter-tab ${activeFilter === 'NEGOTIATION' ? 'active' : ''}`}
             onClick={() => setActiveFilter('NEGOTIATION')}
           >
-            In negotiation ({agreements.filter((a) => a.status === 'IN_NEGOTIATION').length})
+            In Negotiation ({negotiationCount})
           </button>
           <button
             className={`filter-tab ${activeFilter === 'SEALED' ? 'active' : ''}`}
             onClick={() => setActiveFilter('SEALED')}
           >
-            Signed & Sealed ({sealedAgreements.length})
+            Signed & Sealed ({sealedCount})
           </button>
         </div>
 
@@ -192,7 +233,7 @@ export const Dashboard = ({ onSelectAgreement }) => {
             <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '10px' }} />
             <input
               type="text"
-              placeholder="Filter by title..."
+              placeholder="Search contracts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -203,7 +244,7 @@ export const Dashboard = ({ onSelectAgreement }) => {
                 color: 'var(--text-main)',
                 fontSize: '0.8rem',
                 outline: 'none',
-                width: '180px',
+                width: '190px',
               }}
             />
           </div>
@@ -211,7 +252,7 @@ export const Dashboard = ({ onSelectAgreement }) => {
           <button
             className="btn btn-secondary btn-sm"
             onClick={fetchAgreements}
-            title="Refresh"
+            title="Refresh list"
             style={{ padding: '7px 10px' }}
           >
             <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
@@ -219,175 +260,212 @@ export const Dashboard = ({ onSelectAgreement }) => {
         </div>
       </div>
 
-      {/* 2x2 Grid of Contract Cards (Matching Image 1) */}
+      {/* 4. Unified Institutional Contracts Table */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-          Loading your active contracts...
+          Loading agreement repository...
         </div>
-      ) : activeAgreements.length === 0 ? (
-        <div className="contract-card" style={{ textAlign: 'center', padding: '48px 20px', marginBottom: '32px' }}>
-          <FileText size={42} color="var(--text-dim)" style={{ margin: '0 auto 12px' }} />
-          <h4 style={{ fontSize: '1.1rem', color: 'var(--text-main)', marginBottom: '4px' }}>
-            No Active Contracts
+      ) : filteredAgreements.length === 0 ? (
+        <div className="contracts-table-container" style={{ padding: '48px 20px', textAlign: 'center' }}>
+          <FileText size={38} color="var(--text-dim)" style={{ margin: '0 auto 12px' }} />
+          <h4 style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '4px' }}>
+            No Agreements Found
           </h4>
-          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', maxWidth: '380px', margin: '0 auto 18px' }}>
-            Click below to instantly create and audit the pre-configured demo contract with realistic clauses.
+          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', maxWidth: '360px', margin: '0 auto 16px' }}>
+            {activeFilter !== 'ALL' 
+              ? 'No contracts match the selected filter criteria.' 
+              : 'Create a new agreement or load the pre-audited demo contract to get started.'}
           </p>
           <button className="btn btn-primary btn-sm" onClick={handleCreateSample} style={{ margin: '0 auto' }}>
-            <Sparkles size={14} />
+            <Sparkles size={13} />
             Load Pre-Configured Demo Contract
           </button>
         </div>
       ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
-          gap: '18px',
-          marginBottom: '36px',
-        }}>
-          {activeAgreements.map((agreement) => {
-            const hasRisks = (agreement.criticalRiskCount || 0) > 0;
-            const refNumber = `№PF-${agreement._id.slice(-8).toUpperCase()}`;
+        <div className="contracts-table-container">
+          <table className="contracts-table">
+            <thead>
+              <tr>
+                <th>Document Name & Ref</th>
+                <th>Counterparty</th>
+                <th>Status</th>
+                <th>Policy Alignment</th>
+                <th>Security & Seal</th>
+                <th style={{ textAlign: 'right' }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAgreements.map((agreement) => {
+                const isSealed = agreement.status === 'FULLY_EXECUTED_LOCKED';
+                const hasRisks = (agreement.criticalRiskCount || 0) > 0 && !isSealed;
+                const refId = `PF-${agreement._id.slice(-8).toUpperCase()}`;
+                const partnerName = agreement.invitedParty?.name || 'Awaiting Counterparty';
 
-            return (
-              <div key={agreement._id} className="contract-card">
-                <div>
-                  {/* Card Header (Matching Image 1) */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '1rem' }}>📄</span>
-                      <h4 style={{ fontSize: '1rem', color: 'var(--text-main)', fontWeight: 700 }}>
-                        {agreement.title}
-                      </h4>
-                    </div>
+                return (
+                  <tr 
+                    key={agreement._id}
+                    onClick={() => onSelectAgreement(agreement._id)}
+                  >
+                    {/* Document Name & Ref */}
+                    <td style={{ minWidth: '320px' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <div style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          background: isSealed ? 'var(--risk-safe-bg)' : hasRisks ? 'var(--risk-critical-bg)' : 'var(--accent-bg)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          marginTop: '2px',
+                        }}>
+                          {isSealed ? (
+                            <ShieldCheck size={16} color="var(--risk-safe)" />
+                          ) : hasRisks ? (
+                            <AlertTriangle size={16} color="var(--risk-critical)" />
+                          ) : (
+                            <FileText size={16} color="var(--accent)" />
+                          )}
+                        </div>
 
-                    <span className={`badge ${hasRisks ? 'badge-critical' : 'badge-safe'}`}>
-                      {hasRisks ? `${agreement.criticalRiskCount} Conflicts` : 'Compliant'}
-                    </span>
-                  </div>
+                        <div>
+                          <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '0.88rem' }}>
+                            {agreement.title}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{refId}</span>
+                            <span>•</span>
+                            <span>{agreement.clauses?.length || 8} Clauses</span>
+                            <span>•</span>
+                            <span>By {agreement.creator?.name || 'User'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
 
-                  {/* Spec Data Grid (Matching Image 1) */}
-                  <div className="spec-grid">
-                    <div className="spec-item">
-                      <span className="spec-label">Counterparty</span>
-                      <span className="spec-value">{agreement.invitedParty?.name || 'Awaiting Partner'}</span>
-                    </div>
-
-                    <div className="spec-item">
-                      <span className="spec-label">Contract Number</span>
-                      <span className="spec-value" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{refNumber}</span>
-                    </div>
-
-                    <div className="spec-item">
-                      <span className="spec-label">Status</span>
-                      <span className="spec-value">
-                        <span className={`badge ${hasRisks ? 'badge-critical' : 'badge-safe'}`} style={{ padding: '2px 6px', fontSize: '0.68rem' }}>
-                          {hasRisks ? 'Action Required' : 'Ready to Sign'}
+                    {/* Counterparty */}
+                    <td style={{ minWidth: '160px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          background: 'var(--bg-muted)',
+                          border: '1px solid var(--border-subtle)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          color: 'var(--text-secondary)',
+                        }}>
+                          {partnerName.charAt(0)}
+                        </div>
+                        <span style={{ color: 'var(--text-main)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                          {partnerName}
                         </span>
-                      </span>
-                    </div>
-
-                    <div className="spec-item">
-                      <span className="spec-label">Alignment Score</span>
-                      <span className="spec-value" style={{ color: hasRisks ? 'var(--risk-critical)' : 'var(--risk-safe)' }}>
-                        {agreement.alignmentScore}% Aligned
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card Actions Footer (Matching Image 1: "More info" and "Open") */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '6px' }}>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => onSelectAgreement(agreement._id)}
-                    style={{ border: 'none', background: 'transparent', color: 'var(--text-muted)' }}
-                  >
-                    <Info size={13} />
-                    <span>More info</span>
-                  </button>
-
-                  <button
-                    className="btn btn-primary btn-sm"
-                    onClick={() => onSelectAgreement(agreement._id)}
-                    id={`btn-open-contract-${agreement._id}`}
-                    style={{ padding: '7px 16px' }}
-                  >
-                    <ExternalLink size={13} />
-                    <span>Open</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Lower Section: Deleted & Sealed Archive (Matching Image 1) */}
-      <div>
-        <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: 700, marginBottom: '14px' }}>
-          Executed and sealed contracts ({sealedAgreements.length})
-        </h3>
-
-        {sealedAgreements.length === 0 ? (
-          <div className="contract-card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.825rem' }}>
-            No executed contracts yet. Once both parties digitally sign, agreements are cryptographically sealed and archived here.
-          </div>
-        ) : (
-          <div className="contract-card" style={{ padding: '0', overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.825rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-muted)', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '12px 18px', fontWeight: 600 }}>Type / Title</th>
-                  <th style={{ padding: '12px 18px', fontWeight: 600 }}>Counterparty</th>
-                  <th style={{ padding: '12px 18px', fontWeight: 600 }}>Contract Number</th>
-                  <th style={{ padding: '12px 18px', fontWeight: 600 }}>SHA-256 Seal</th>
-                  <th style={{ padding: '12px 18px', fontWeight: 600 }}>Status</th>
-                  <th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600 }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sealedAgreements.map((agreement) => (
-                  <tr key={agreement._id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                    <td style={{ padding: '14px 18px', fontWeight: 600, color: 'var(--text-main)' }}>
-                      {agreement.title}
+                      </div>
                     </td>
-                    <td style={{ padding: '14px 18px', color: 'var(--text-secondary)' }}>
-                      {agreement.invitedParty?.name || 'Partner'}
+
+                    {/* Status */}
+                    <td style={{ minWidth: '130px' }}>
+                      {isSealed ? (
+                        <span className="badge badge-safe">
+                          <CheckCircle2 size={11} /> Executed & Sealed
+                        </span>
+                      ) : hasRisks ? (
+                        <span className="badge badge-critical">
+                          <ShieldAlert size={11} /> {agreement.criticalRiskCount} Conflicts
+                        </span>
+                      ) : agreement.status === 'IN_NEGOTIATION' ? (
+                        <span className="badge badge-primary">
+                          <Clock size={11} /> In Negotiation
+                        </span>
+                      ) : (
+                        <span className="badge badge-primary">
+                          <FileCheck size={11} /> Ready to Sign
+                        </span>
+                      )}
                     </td>
-                    <td style={{ padding: '14px 18px', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      №PF-{agreement._id.slice(-8).toUpperCase()}
+
+                    {/* Policy Alignment */}
+                    <td style={{ minWidth: '120px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{
+                          width: '60px',
+                          height: '6px',
+                          borderRadius: '3px',
+                          background: 'var(--bg-muted)',
+                          overflow: 'hidden',
+                        }}>
+                          <div style={{
+                            width: `${agreement.alignmentScore || 0}%`,
+                            height: '100%',
+                            background: isSealed || agreement.alignmentScore >= 80 
+                              ? 'var(--risk-safe)' 
+                              : agreement.alignmentScore >= 60 
+                                ? 'var(--risk-warning)' 
+                                : 'var(--risk-critical)',
+                          }} />
+                        </div>
+                        <span style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          color: isSealed || agreement.alignmentScore >= 80 
+                            ? 'var(--risk-safe)' 
+                            : agreement.alignmentScore >= 60 
+                              ? 'var(--risk-warning)' 
+                              : 'var(--risk-critical)',
+                        }}>
+                          {agreement.alignmentScore}%
+                        </span>
+                      </div>
                     </td>
-                    <td style={{ padding: '14px 18px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--risk-safe)' }}>
-                      {agreement.cryptoSeal?.sha256Hash?.slice(0, 16)}...
+
+                    {/* Security & Seal */}
+                    <td style={{ minWidth: '150px' }}>
+                      {isSealed ? (
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--risk-safe)', display: 'flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}>
+                          <Lock size={11} />
+                          <span>SHA-256:{agreement.cryptoSeal?.sha256Hash?.slice(0, 10)}...</span>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                          ESIGN Protected Draft
+                        </div>
+                      )}
                     </td>
-                    <td style={{ padding: '14px 18px' }}>
-                      <span className="badge badge-safe">
-                        <CheckCircle2 size={11} /> Done
-                      </span>
-                    </td>
-                    <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+
+                    {/* Action */}
+                    <td style={{ textAlign: 'right', minWidth: '160px', whiteSpace: 'nowrap' }}>
                       <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => onSelectAgreement(agreement._id)}
+                        className={`btn btn-sm ${hasRisks ? 'btn-primary' : 'btn-secondary'}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectAgreement(agreement._id);
+                        }}
+                        id={`btn-open-contract-${agreement._id}`}
+                        style={{ padding: '6px 14px', whiteSpace: 'nowrap' }}
                       >
-                        Inspect
+                        <span>{isSealed ? 'Inspect' : hasRisks ? 'Review & Resolve' : 'Open Room'}</span>
+                        <ChevronRight size={13} />
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Create Custom Agreement Modal */}
       {showCustomModal && (
         <div className="modal-overlay" onClick={() => setShowCustomModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ padding: '24px' }}>
             <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)', marginBottom: '14px' }}>
-              Add new contract
+              Add New Legal Agreement
             </h3>
 
             <form onSubmit={handleCreateCustom}>

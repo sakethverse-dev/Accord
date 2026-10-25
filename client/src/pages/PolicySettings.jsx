@@ -46,7 +46,7 @@ export const PolicySettings = ({ onBack }) => {
         style={{ marginBottom: '18px' }}
       >
         <ArrowLeft size={14} />
-        Back to Dashboard
+        Back to Agreements
       </button>
 
       {/* Header */}
@@ -56,7 +56,7 @@ export const PolicySettings = ({ onBack }) => {
             width: '38px',
             height: '38px',
             borderRadius: '9px',
-            background: 'var(--primary-gradient)',
+            background: 'var(--primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
