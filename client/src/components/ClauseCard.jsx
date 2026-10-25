@@ -17,26 +17,20 @@ export const ClauseCard = ({
   const hasBeenModified = clause.currentText !== clause.originalText;
 
   let cardBorder = 'var(--border-subtle)';
-  if (isCritical) cardBorder = 'var(--risk-critical-border)';
-  else if (isWarning) cardBorder = 'var(--risk-warning-border)';
+  if (isCritical && !isResolved) cardBorder = 'var(--risk-critical-border)';
+  else if (isWarning && !isResolved) cardBorder = 'var(--risk-warning-border)';
   else if (isResolved) cardBorder = 'var(--risk-safe-border)';
 
   return (
     <div
-      className="glass-panel"
+      className="contract-card"
       id={`clause-card-${clause.clauseId}`}
       style={{
-        padding: '20px',
+        padding: '22px',
         marginBottom: '16px',
         border: `1px solid ${cardBorder}`,
         borderRadius: '12px',
-        background: isCritical
-          ? 'linear-gradient(180deg, rgba(239, 68, 68, 0.04) 0%, rgba(15, 23, 42, 0.85) 100%)'
-          : isWarning
-          ? 'linear-gradient(180deg, rgba(245, 158, 11, 0.03) 0%, rgba(15, 23, 42, 0.85) 100%)'
-          : isResolved
-          ? 'linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, rgba(15, 23, 42, 0.85) 100%)'
-          : 'var(--bg-card)',
+        background: 'var(--bg-surface)',
       }}
     >
       {/* Header Row */}
@@ -46,13 +40,13 @@ export const ClauseCard = ({
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '10px',
-        marginBottom: '12px',
+        marginBottom: '14px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {clause.sectionNumber || 'Clause'}
           </span>
-          <h4 style={{ fontSize: '1rem', color: '#ffffff', fontWeight: 700 }}>
+          <h4 style={{ fontSize: '1.05rem', color: 'var(--text-main)', fontWeight: 800 }}>
             {clause.title}
           </h4>
         </div>
@@ -71,7 +65,7 @@ export const ClauseCard = ({
           )}
 
           {isPendingProposal && (
-            <span className="badge" style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#c4b5fd', border: '1px solid rgba(139, 92, 246, 0.4)' }}>
+            <span className="badge" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent-border)' }}>
               <History size={11} />
               Proposal Pending
             </span>
@@ -100,20 +94,20 @@ export const ClauseCard = ({
         </div>
       </div>
 
-      {/* Main Text Content */}
+      {/* Main Text Content (Pristine High Contrast Box) */}
       <div style={{
-        background: 'rgba(8, 12, 22, 0.7)',
+        background: 'var(--bg-muted)',
         border: '1px solid var(--border-subtle)',
         borderRadius: '8px',
-        padding: '14px',
-        fontSize: '0.9rem',
-        color: '#e2e8f0',
-        lineHeight: 1.6,
+        padding: '16px',
+        fontSize: '0.925rem',
+        color: 'var(--text-main)',
+        lineHeight: 1.65,
         position: 'relative',
       }}>
         {showOriginal ? (
           <div>
-            <div style={{ fontSize: '0.7rem', color: '#f87171', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--risk-critical-text)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>
               [ Original Unedited Draft ]
             </div>
             {clause.originalText}
@@ -121,7 +115,7 @@ export const ClauseCard = ({
         ) : (
           <div>
             {hasBeenModified && (
-              <div style={{ fontSize: '0.7rem', color: 'var(--risk-safe)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--risk-safe-text)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>
                 [ Active Agreed Text ]
               </div>
             )}
@@ -135,15 +129,17 @@ export const ClauseCard = ({
             onClick={() => setShowOriginal(!showOriginal)}
             style={{
               position: 'absolute',
-              top: '10px',
-              right: '10px',
-              background: 'rgba(255, 255, 255, 0.06)',
+              top: '12px',
+              right: '12px',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '5px',
-              padding: '3px 7px',
-              fontSize: '0.7rem',
-              color: 'var(--text-muted)',
+              padding: '4px 8px',
+              fontSize: '0.72rem',
+              color: 'var(--text-secondary)',
+              fontWeight: 600,
               cursor: 'pointer',
+              boxShadow: 'var(--shadow-sm)',
             }}
           >
             {showOriginal ? 'Show Agreed' : 'Show Original'}
@@ -154,39 +150,39 @@ export const ClauseCard = ({
       {/* Risk Alert Banner */}
       {(isCritical || isWarning) && !isResolved && (
         <div style={{
-          marginTop: '12px',
-          padding: '12px 14px',
+          marginTop: '14px',
+          padding: '14px',
           borderRadius: '8px',
           background: isCritical ? 'var(--risk-critical-bg)' : 'var(--risk-warning-bg)',
           border: `1px solid ${isCritical ? 'var(--risk-critical-border)' : 'var(--risk-warning-border)'}`,
         }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
             {isCritical ? (
-              <ShieldAlert size={16} color="var(--risk-critical)" style={{ marginTop: '2px', flexShrink: 0 }} />
+              <ShieldAlert size={18} color="var(--risk-critical)" style={{ marginTop: '2px', flexShrink: 0 }} />
             ) : (
-              <AlertTriangle size={16} color="var(--risk-warning)" style={{ marginTop: '2px', flexShrink: 0 }} />
+              <AlertTriangle size={18} color="var(--risk-warning)" style={{ marginTop: '2px', flexShrink: 0 }} />
             )}
             <div style={{ flex: 1 }}>
               <div style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: isCritical ? 'var(--risk-critical)' : 'var(--risk-warning)',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                color: isCritical ? 'var(--risk-critical-text)' : 'var(--risk-warning-text)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
               }}>
                 Policy Conflict Identified
               </div>
-              <div style={{ fontSize: '0.825rem', color: '#f1f5f9', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', marginTop: '3px', fontWeight: 500 }}>
                 {clause.riskReason}
               </div>
 
               {clause.suggestedReplacement && (
-                <div style={{ marginTop: '8px', padding: '8px 10px', background: 'rgba(10, 16, 30, 0.8)', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '0.7rem', color: '#a5b4fc', fontWeight: 700, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Sparkles size={11} />
+                <div style={{ marginTop: '10px', padding: '10px 12px', background: 'var(--bg-surface)', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Sparkles size={12} />
                     Recommended Standard Compromise:
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#cbd5e1', fontStyle: 'italic', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: '3px', lineHeight: 1.5 }}>
                     "{clause.suggestedReplacement}"
                   </div>
                 </div>
@@ -202,7 +198,7 @@ export const ClauseCard = ({
         alignItems: 'center',
         justifyContent: 'flex-end',
         gap: '8px',
-        marginTop: '14px',
+        marginTop: '16px',
         flexWrap: 'wrap',
       }}>
         {hasBeenModified && (

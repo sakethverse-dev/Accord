@@ -45,21 +45,22 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 2px 10px rgba(16, 185, 129, 0.3)',
+              color: '#ffffff',
             }}>
-              <ShieldCheck size={22} color="white" />
+              <ShieldCheck size={22} />
             </div>
             <div>
-              <span style={{ fontSize: '0.68rem', color: 'var(--risk-safe)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.68rem', color: 'var(--risk-safe-text)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Legal Record of Execution
               </span>
-              <h3 style={{ fontSize: '1.25rem', color: '#fff', marginTop: '1px', fontWeight: 800 }}>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginTop: '1px', fontWeight: 800 }}>
                 Cryptographic Audit Certificate
               </h3>
             </div>
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
           >
             <X size={18} />
           </button>
@@ -67,7 +68,7 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
 
         {/* Certificate Card */}
         <div style={{
-          background: 'rgba(10, 16, 30, 0.95)',
+          background: 'var(--bg-muted)',
           border: '1px solid rgba(16, 185, 129, 0.3)',
           borderRadius: '12px',
           padding: '20px',
@@ -75,10 +76,10 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
         }}>
           {/* Document Title & Meta */}
           <div style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '14px', marginBottom: '14px' }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
               Document Title
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
               {agreement.title}
             </div>
             <div style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '0.75rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
@@ -91,7 +92,7 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
           {/* SHA-256 Hash Display */}
           <div style={{ marginBottom: '18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
-              <span style={{ fontSize: '0.72rem', color: '#a5b4fc', textTransform: 'uppercase', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--accent)', textTransform: 'uppercase', fontWeight: 800 }}>
                 SHA-256 Tamper-Evident Checksum
               </span>
               <button
@@ -99,12 +100,13 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: copied ? 'var(--risk-safe)' : 'var(--text-muted)',
+                  color: copied ? 'var(--risk-safe-text)' : 'var(--text-muted)',
                   fontSize: '0.72rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
+                  fontWeight: 600,
                 }}
               >
                 {copied ? <Check size={11} /> : <Copy size={11} />}
@@ -112,15 +114,16 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
               </button>
             </div>
             <div style={{
-              background: 'rgba(0, 0, 0, 0.6)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '6px',
               padding: '8px 12px',
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.75rem',
-              color: '#34d399',
+              fontSize: '0.78rem',
+              color: 'var(--risk-safe-text)',
               wordBreak: 'break-all',
               letterSpacing: '0.03em',
+              fontWeight: 700,
             }}>
               {hash}
             </div>
@@ -128,7 +131,7 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
 
           {/* Signatures List (Responsive Grid) */}
           <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 700 }}>
               Verified Signatures ({agreement.signatures?.length || 0})
             </div>
 
@@ -137,17 +140,17 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
                 <div
                   key={idx}
                   style={{
-                    background: 'rgba(14, 21, 38, 0.8)',
+                    background: 'var(--bg-surface)',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: '8px',
                     padding: '12px',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--risk-safe)', marginBottom: '3px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--risk-safe-text)', marginBottom: '3px' }}>
                     <CheckCircle2 size={13} />
-                    <strong style={{ color: '#fff', fontSize: '0.85rem' }}>{sig.signerName}</strong>
+                    <strong style={{ color: 'var(--text-main)', fontSize: '0.85rem' }}>{sig.signerName}</strong>
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#818cf8', textTransform: 'capitalize', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--accent)', textTransform: 'capitalize', fontWeight: 700 }}>
                     {sig.signerRole}
                   </div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -174,8 +177,8 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
             alignItems: 'center',
             gap: '8px',
           }}>
-            <ShieldCheck size={18} color={verificationResult.isVerified ? 'var(--risk-safe)' : 'var(--risk-critical)'} />
-            <div style={{ fontSize: '0.8rem', color: '#fff' }}>
+            <ShieldCheck size={18} color={verificationResult.isVerified ? 'var(--risk-safe-text)' : 'var(--risk-critical-text)'} />
+            <div style={{ fontSize: '0.825rem', color: 'var(--text-main)' }}>
               <strong>{verificationResult.isVerified ? 'VERIFICATION PASSED:' : 'VERIFICATION FAILED:'}</strong> {verificationResult.reason}
             </div>
           </div>

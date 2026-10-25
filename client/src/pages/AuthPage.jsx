@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, User, Briefcase, ArrowRight, Sparkles, CheckCircle2, Lock } from 'lucide-react';
+import { Shield, User, Briefcase, ArrowRight, Sparkles, Lock } from 'lucide-react';
 
 export const AuthPage = ({ onAuthSuccess }) => {
   const { login, register, quickLoginDemo } = useAuth();
@@ -69,10 +69,11 @@ export const AuthPage = ({ onAuthSuccess }) => {
             justifyContent: 'center',
             boxShadow: '0 4px 18px rgba(79, 70, 229, 0.4)',
             marginBottom: '10px',
+            color: '#ffffff',
           }}>
-            <Shield size={26} color="white" />
+            <Shield size={26} />
           </div>
-          <h2 style={{ fontSize: '1.55rem', color: '#fff', fontWeight: 800 }}>
+          <h2 style={{ fontSize: '1.55rem', color: 'var(--text-main)', fontWeight: 800 }}>
             {isRegister ? 'Create Your Account' : 'Welcome to PactFlow'}
           </h2>
           <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -81,8 +82,8 @@ export const AuthPage = ({ onAuthSuccess }) => {
         </div>
 
         {/* 1-Click Evaluator Demo Accounts Banner */}
-        <div className="glass-panel" style={{ padding: '14px 16px', marginBottom: '18px', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
-          <div style={{ fontSize: '0.72rem', color: '#a5b4fc', textTransform: 'uppercase', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '8px' }}>
+        <div className="contract-card" style={{ padding: '14px 16px', marginBottom: '18px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--accent)', textTransform: 'uppercase', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '8px' }}>
             <Sparkles size={12} />
             Evaluator Fast Access (1-Click Demo Login)
           </div>
@@ -93,20 +94,20 @@ export const AuthPage = ({ onAuthSuccess }) => {
               id="btn-evaluator-freelancer"
               onClick={() => handleQuickDemo('freelancer')}
               style={{
-                background: 'rgba(79, 70, 229, 0.15)',
-                border: '1px solid rgba(99, 102, 241, 0.35)',
+                background: 'var(--bg-muted)',
+                border: '1px solid var(--border-subtle)',
                 borderRadius: '8px',
-                padding: '8px 10px',
+                padding: '10px',
                 textAlign: 'left',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
             >
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <User size={12} color="#818cf8" />
+              <div style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <User size={13} color="var(--accent)" />
                 Alex Rivera
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                 Role: Freelancer
               </div>
             </button>
@@ -116,20 +117,20 @@ export const AuthPage = ({ onAuthSuccess }) => {
               id="btn-evaluator-client"
               onClick={() => handleQuickDemo('client')}
               style={{
-                background: 'rgba(124, 58, 237, 0.15)',
-                border: '1px solid rgba(139, 92, 246, 0.35)',
+                background: 'var(--bg-muted)',
+                border: '1px solid var(--border-subtle)',
                 borderRadius: '8px',
-                padding: '8px 10px',
+                padding: '10px',
                 textAlign: 'left',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
             >
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Briefcase size={12} color="#a78bfa" />
+              <div style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <Briefcase size={13} color="var(--accent)" />
                 Sarah Chen
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                 Role: Enterprise Client
               </div>
             </button>
@@ -137,14 +138,14 @@ export const AuthPage = ({ onAuthSuccess }) => {
         </div>
 
         {/* Auth Form Card */}
-        <div className="glass-panel" style={{ padding: '24px' }}>
+        <div className="contract-card" style={{ padding: '24px' }}>
           {error && (
             <div style={{
               background: 'var(--risk-critical-bg)',
               border: '1px solid var(--risk-critical-border)',
               borderRadius: '6px',
               padding: '8px 12px',
-              color: '#fca5a5',
+              color: 'var(--risk-critical-text)',
               fontSize: '0.8rem',
               marginBottom: '14px',
             }}>
@@ -180,12 +181,12 @@ export const AuthPage = ({ onAuthSuccess }) => {
                       style={{
                         padding: '8px',
                         borderRadius: '6px',
-                        background: role === 'freelancer' ? 'rgba(79, 70, 229, 0.3)' : 'rgba(10, 16, 30, 0.6)',
-                        border: role === 'freelancer' ? '1px solid var(--primary-light)' : '1px solid var(--border-subtle)',
-                        color: role === 'freelancer' ? '#fff' : 'var(--text-muted)',
+                        background: role === 'freelancer' ? 'var(--primary)' : 'var(--bg-muted)',
+                        border: role === 'freelancer' ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
+                        color: role === 'freelancer' ? '#ffffff' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         fontSize: '0.8rem',
-                        fontWeight: 600,
+                        fontWeight: 700,
                       }}
                     >
                       👨‍💻 Freelancer
@@ -196,12 +197,12 @@ export const AuthPage = ({ onAuthSuccess }) => {
                       style={{
                         padding: '8px',
                         borderRadius: '6px',
-                        background: role === 'client' ? 'rgba(124, 58, 237, 0.3)' : 'rgba(10, 16, 30, 0.6)',
-                        border: role === 'client' ? '1px solid var(--secondary)' : '1px solid var(--border-subtle)',
-                        color: role === 'client' ? '#fff' : 'var(--text-muted)',
+                        background: role === 'client' ? 'var(--primary)' : 'var(--bg-muted)',
+                        border: role === 'client' ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
+                        color: role === 'client' ? '#ffffff' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         fontSize: '0.8rem',
-                        fontWeight: 600,
+                        fontWeight: 700,
                       }}
                     >
                       🏢 Client / Vendor
@@ -277,8 +278,8 @@ export const AuthPage = ({ onAuthSuccess }) => {
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: '#818cf8',
-                fontWeight: 600,
+                color: 'var(--accent)',
+                fontWeight: 700,
                 cursor: 'pointer',
               }}
             >

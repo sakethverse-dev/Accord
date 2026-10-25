@@ -37,6 +37,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
 
   const fetchAgreement = async () => {
     try {
+      setLoading(true);
       const data = await api.agreements.getById(agreementId);
       setAgreement(data);
     } catch (err) {
@@ -81,7 +82,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
 
   if (loading) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-muted)' }}>
+      <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-muted)' }}>
         Loading secure agreement room...
       </div>
     );
@@ -89,8 +90,8 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
 
   if (!agreement) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '80px 0' }}>
-        <p style={{ color: '#f87171' }}>Agreement room could not be found or access is unauthorized.</p>
+      <div style={{ textAlign: 'center', padding: '80px 0' }}>
+        <p style={{ color: 'var(--risk-critical)' }}>Agreement room could not be found or access is unauthorized.</p>
         <button className="btn btn-secondary btn-sm" onClick={onBack} style={{ marginTop: '16px' }}>
           Back to Dashboard
         </button>
@@ -115,13 +116,13 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
   const resolvedCount = agreement.clauses?.filter((c) => c.status === 'RESOLVED').length || 0;
 
   return (
-    <div className="container" style={{ padding: '20px 0 60px' }}>
+    <div style={{ width: '100%' }}>
       {/* Top Header Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: '18px',
+        marginBottom: '20px',
         flexWrap: 'wrap',
         gap: '14px',
       }}>
@@ -137,21 +138,21 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           </button>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <h2 style={{ fontSize: '1.35rem', color: '#fff', fontWeight: 800 }}>
+              <h2 style={{ fontSize: '1.45rem', color: 'var(--text-main)', fontWeight: 800 }}>
                 {agreement.title}
               </h2>
               <span className={`badge ${isLocked ? 'badge-safe' : 'badge-primary'}`}>
                 {isLocked ? '🔒 Fully Executed & Sealed' : agreement.status.replace(/_/g, ' ')}
               </span>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-              Creator: <strong style={{ color: '#fff' }}>{agreement.creator?.name}</strong> • Counterparty: <strong style={{ color: '#fff' }}>{agreement.invitedParty?.name || 'Awaiting Partner'}</strong>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '3px' }}>
+              Creator: <strong style={{ color: 'var(--text-main)' }}>{agreement.creator?.name}</strong> • Counterparty: <strong style={{ color: 'var(--text-main)' }}>{agreement.invitedParty?.name || 'Awaiting Partner'}</strong>
             </div>
           </div>
         </div>
 
         {/* Right: Actions */}
-        <div className="header-action-row">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           {/* Share Invite */}
           <button
             className="btn btn-secondary btn-sm"
@@ -188,7 +189,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
       </div>
 
       {/* Hero Risk Meter */}
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '22px' }}>
         <RiskMeter
           alignmentScore={agreement.alignmentScore}
           criticalCount={criticalCount}
@@ -198,84 +199,40 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
       </div>
 
       {/* Main Split Grid (Responsive 2-col to 1-col on mobile) */}
-      <div className="app-room-grid">
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+        gap: '24px',
+        alignItems: 'start',
+      }}>
         {/* Left Column: Clause Review Stream */}
-        <div>
+        <div style={{ minWidth: 0 }}>
           {/* Filter Pills */}
-          <div style={{
-            display: 'flex',
-            gap: '6px',
-            marginBottom: '14px',
-            background: 'rgba(14, 21, 38, 0.8)',
-            padding: '4px',
-            borderRadius: '8px',
-            border: '1px solid var(--border-subtle)',
-            overflowX: 'auto',
-          }}>
+          <div className="filter-tabs" style={{ marginBottom: '16px' }}>
             <button
+              className={`filter-tab ${filter === 'ALL' ? 'active' : ''}`}
               onClick={() => setFilter('ALL')}
-              style={{
-                background: filter === 'ALL' ? 'rgba(79, 70, 229, 0.3)' : 'transparent',
-                color: filter === 'ALL' ? '#ffffff' : 'var(--text-muted)',
-                border: filter === 'ALL' ? '1px solid rgba(99, 102, 241, 0.5)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '5px 10px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
             >
               All Clauses ({agreement.clauses?.length || 0})
             </button>
 
             <button
+              className={`filter-tab ${filter === 'CRITICAL' ? 'active' : ''}`}
               onClick={() => setFilter('CRITICAL')}
-              style={{
-                background: filter === 'CRITICAL' ? 'var(--risk-critical-bg)' : 'transparent',
-                color: filter === 'CRITICAL' ? 'var(--risk-critical)' : 'var(--text-muted)',
-                border: filter === 'CRITICAL' ? '1px solid var(--risk-critical-border)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '5px 10px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
             >
               Critical ({criticalCount})
             </button>
 
             <button
+              className={`filter-tab ${filter === 'WARNING' ? 'active' : ''}`}
               onClick={() => setFilter('WARNING')}
-              style={{
-                background: filter === 'WARNING' ? 'var(--risk-warning-bg)' : 'transparent',
-                color: filter === 'WARNING' ? 'var(--risk-warning)' : 'var(--text-muted)',
-                border: filter === 'WARNING' ? '1px solid var(--risk-warning-border)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '5px 10px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
             >
               Warnings ({warningCount})
             </button>
 
             <button
+              className={`filter-tab ${filter === 'RESOLVED' ? 'active' : ''}`}
               onClick={() => setFilter('RESOLVED')}
-              style={{
-                background: filter === 'RESOLVED' ? 'var(--risk-safe-bg)' : 'transparent',
-                color: filter === 'RESOLVED' ? 'var(--risk-safe)' : 'var(--text-muted)',
-                border: filter === 'RESOLVED' ? '1px solid var(--risk-safe-border)' : '1px solid transparent',
-                borderRadius: '6px',
-                padding: '5px 10px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
             >
               Resolved ({resolvedCount})
             </button>
@@ -296,13 +253,13 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
         </div>
 
         {/* Right Column: Negotiation & Audit Sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', minWidth: 0 }}>
           {/* Active Proposals Panel */}
-          <div className="glass-panel" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <div className="contract-card" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <History size={15} color="#818cf8" />
-                <h4 style={{ fontSize: '0.9rem', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <History size={16} color="var(--accent)" />
+                <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800 }}>
                   Pending Amendments ({pendingProposals.length})
                 </h4>
               </div>
@@ -311,21 +268,21 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             {pendingProposals.length === 0 ? (
               <div style={{
                 textAlign: 'center',
-                padding: '24px 12px',
-                background: 'rgba(10, 16, 30, 0.6)',
+                padding: '24px 14px',
+                background: 'var(--bg-muted)',
                 borderRadius: '8px',
                 border: '1px solid var(--border-subtle)',
-                color: 'var(--text-dim)',
-                fontSize: '0.825rem',
+                color: 'var(--text-muted)',
+                fontSize: '0.85rem',
               }}>
-                <CheckCircle2 size={22} color="var(--risk-safe)" style={{ margin: '0 auto 6px', opacity: 0.8 }} />
+                <CheckCircle2 size={24} color="var(--risk-safe)" style={{ margin: '0 auto 6px', opacity: 0.9 }} />
                 No pending amendment proposals.
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '3px' }}>
                   Click "⚡ Propose Safe Compromise" on any clause to propose terms.
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {pendingProposals.map((proposal) => {
                   const targetClause = agreement.clauses?.find((c) => c.clauseId === proposal.clauseId);
 
@@ -333,36 +290,37 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                     <div
                       key={proposal.proposalId}
                       style={{
-                        background: 'rgba(10, 16, 30, 0.85)',
-                        border: '1px solid rgba(99, 102, 241, 0.35)',
+                        background: 'var(--bg-muted)',
+                        border: '1px solid var(--border-subtle)',
                         borderRadius: '8px',
                         padding: '14px',
                       }}
                       id={`proposal-box-${proposal.proposalId}`}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#a5b4fc' }}>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent)' }}>
                           {targetClause?.title || proposal.clauseId}
                         </span>
-                        <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                           By {proposal.proposedByName}
                         </span>
                       </div>
 
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '8px', fontStyle: 'italic' }}>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '8px', fontStyle: 'italic' }}>
                         "{proposal.rationale}"
                       </div>
 
                       <div style={{
-                        background: 'rgba(14, 21, 38, 0.85)',
+                        background: 'var(--bg-surface)',
                         border: '1px solid var(--border-subtle)',
                         borderRadius: '6px',
-                        padding: '8px 10px',
-                        fontSize: '0.78rem',
-                        color: '#cbd5e1',
+                        padding: '10px',
+                        fontSize: '0.825rem',
+                        color: 'var(--text-main)',
                         marginBottom: '10px',
-                        maxHeight: '90px',
+                        maxHeight: '100px',
                         overflowY: 'auto',
+                        lineHeight: 1.5,
                       }}>
                         {proposal.proposedText}
                       </div>
@@ -371,22 +329,22 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                       <div style={{ display: 'flex', gap: '6px' }}>
                         <button
                           className="btn btn-safe btn-sm"
-                          style={{ flex: 1, padding: '4px 8px' }}
+                          style={{ flex: 1, padding: '5px 8px' }}
                           onClick={() => handleProposalRespond(proposal.proposalId, 'ACCEPT')}
                           disabled={actionLoading}
                           id={`btn-accept-${proposal.proposalId}`}
                         >
-                          <CheckCircle2 size={12} />
+                          <CheckCircle2 size={13} />
                           Accept Amendment
                         </button>
                         <button
                           className="btn btn-secondary btn-sm"
-                          style={{ flex: 1, padding: '4px 8px' }}
+                          style={{ flex: 1, padding: '5px 8px' }}
                           onClick={() => handleProposalRespond(proposal.proposalId, 'REJECT')}
                           disabled={actionLoading}
                           id={`btn-reject-${proposal.proposalId}`}
                         >
-                          <XCircle size={12} />
+                          <XCircle size={13} />
                           Reject
                         </button>
                       </div>
@@ -398,43 +356,43 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           </div>
 
           {/* Policy Rules Match Matrix */}
-          <div className="glass-panel" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <Shield size={15} color="#818cf8" />
-              <h4 style={{ fontSize: '0.9rem', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <div className="contract-card" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <Shield size={16} color="var(--accent)" />
+              <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800 }}>
                 Safety Policy Matrix
               </h4>
             </div>
 
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
               Active deterministic policy standards:
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid var(--border-subtle)' }}>
-                <span style={{ color: 'var(--text-dim)' }}>Payment Terms:</span>
-                <span style={{ color: '#fff', fontWeight: 600 }}>Net-{agreement.creator?.policyProfile?.maxPaymentDays || 30} Days</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.825rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Payment Terms:</span>
+                <span style={{ color: 'var(--text-main)', fontWeight: 700 }}>Net-{agreement.creator?.policyProfile?.maxPaymentDays || 30} Days</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid var(--border-subtle)' }}>
-                <span style={{ color: 'var(--text-dim)' }}>Liability Ceiling:</span>
-                <span style={{ color: '#fff', fontWeight: 600 }}>1x Fees Paid</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Liability Ceiling:</span>
+                <span style={{ color: 'var(--text-main)', fontWeight: 700 }}>1x Fees Paid</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid var(--border-subtle)' }}>
-                <span style={{ color: 'var(--text-dim)' }}>IP Transfer:</span>
-                <span style={{ color: '#fff', fontWeight: 600 }}>Upon Full Payment</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>IP Transfer:</span>
+                <span style={{ color: 'var(--text-main)', fontWeight: 700 }}>Upon Full Payment</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0' }}>
-                <span style={{ color: 'var(--text-dim)' }}>Non-Compete:</span>
-                <span style={{ color: 'var(--risk-safe)', fontWeight: 600 }}>Strictly Refused</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Non-Compete:</span>
+                <span style={{ color: 'var(--risk-safe-text)', fontWeight: 700 }}>Strictly Refused</span>
               </div>
             </div>
           </div>
 
           {/* Audit Trail Log */}
-          <div className="glass-panel" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <Clock size={15} color="var(--text-dim)" />
-              <h4 style={{ fontSize: '0.9rem', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <div className="contract-card" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <Clock size={16} color="var(--text-dim)" />
+              <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 800 }}>
                 Audit Trail Log ({agreement.auditLogs?.length || 0})
               </h4>
             </div>
@@ -446,14 +404,14 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                   style={{
                     padding: '8px 10px',
                     borderRadius: '6px',
-                    background: 'rgba(10, 16, 30, 0.7)',
+                    background: 'var(--bg-muted)',
                     border: '1px solid var(--border-subtle)',
-                    fontSize: '0.72rem',
+                    fontSize: '0.75rem',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#a5b4fc', fontWeight: 700, marginBottom: '2px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent)', fontWeight: 700, marginBottom: '2px' }}>
                     <span>{log.action.replace(/_/g, ' ')}</span>
-                    <span style={{ color: 'var(--text-dim)', fontSize: '0.65rem' }}>
+                    <span style={{ color: 'var(--text-dim)', fontSize: '0.68rem' }}>
                       {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>

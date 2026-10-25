@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Send, ArrowRight } from 'lucide-react';
+import { X, Sparkles, Send } from 'lucide-react';
 
 export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => {
   const [proposedText, setProposedText] = useState('');
@@ -8,7 +8,6 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
 
   useEffect(() => {
     if (clause) {
-      // Default to suggested replacement if available, else current text
       setProposedText(clause.suggestedReplacement || clause.currentText || '');
       setRationale(
         clause.riskReason
@@ -47,38 +46,38 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ padding: '28px' }}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ padding: '24px' }}>
         {/* Modal Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 800, textTransform: 'uppercase' }}>
               Amendment Proposal
             </span>
-            <h3 style={{ fontSize: '1.25rem', color: '#fff', marginTop: '2px' }}>
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)', marginTop: '2px', fontWeight: 800 }}>
               {clause.sectionNumber}: {clause.title}
             </h3>
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Current Text Readonly */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '5px', display: 'block' }}>
               Current Agreement Text:
             </label>
             <div style={{
-              background: 'rgba(15, 23, 42, 0.7)',
+              background: 'var(--bg-muted)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '8px',
               padding: '12px 14px',
               fontSize: '0.875rem',
-              color: 'var(--text-dim)',
+              color: 'var(--text-secondary)',
               lineHeight: 1.5,
               maxHeight: '100px',
               overflowY: 'auto',
@@ -94,17 +93,17 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
                 type="button"
                 onClick={useStandardCompromise}
                 style={{
-                  background: 'rgba(99, 102, 241, 0.15)',
-                  border: '1px solid rgba(99, 102, 241, 0.35)',
+                  background: 'var(--accent-bg)',
+                  border: '1px solid var(--accent-border)',
                   borderRadius: '6px',
-                  padding: '4px 10px',
-                  color: '#a5b4fc',
+                  padding: '5px 10px',
+                  color: 'var(--accent)',
                   fontSize: '0.75rem',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '5px',
                 }}
               >
                 <Sparkles size={12} />
@@ -114,8 +113,8 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
           )}
 
           {/* Proposed Text Area */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '0.78rem', color: '#a5b4fc', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '5px', display: 'block' }}>
               Proposed Amendment Text:
             </label>
             <textarea
@@ -131,8 +130,8 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
           </div>
 
           {/* Rationale / Explanation */}
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '5px', display: 'block' }}>
               Rationale / Reason for Counter-Party:
             </label>
             <input
@@ -146,7 +145,7 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
           </div>
 
           {/* Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
@@ -156,7 +155,7 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal }) => 
               disabled={loading}
               id="btn-submit-proposal-confirm"
             >
-              <Send size={15} />
+              <Send size={14} />
               {loading ? 'Submitting...' : 'Submit Amendment'}
             </button>
           </div>

@@ -23,17 +23,18 @@ export const RiskMeter = ({ alignmentScore = 100, criticalCount = 0, warningCoun
 
   return (
     <div
-      className="glass-panel"
       style={{
+        background: 'var(--bg-surface)',
+        border: `1px solid var(--border-subtle)`,
+        borderLeft: `5px solid ${statusColor}`,
+        borderRadius: '12px',
+        boxShadow: 'var(--shadow-card)',
         padding: '20px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '20px',
-        borderLeft: `4px solid ${statusColor}`,
-        borderColor: statusBorder,
-        borderLeftColor: statusColor,
       }}
     >
       {/* Score & Health Header */}
@@ -42,20 +43,19 @@ export const RiskMeter = ({ alignmentScore = 100, criticalCount = 0, warningCoun
         <div style={{
           width: '70px',
           height: '70px',
-          borderRadius: '14px',
-          background: 'rgba(10, 16, 30, 0.95)',
+          borderRadius: '12px',
+          background: 'var(--bg-muted)',
           border: `2px solid ${statusColor}`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: `0 4px 16px -2px ${statusColor}33`,
         }}>
           <span style={{ fontSize: '1.5rem', fontWeight: 800, color: statusColor, lineHeight: 1 }}>
             {alignmentScore}%
           </span>
-          <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: '3px', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: '3px', fontWeight: 700 }}>
             Alignment
           </span>
         </div>
@@ -64,17 +64,17 @@ export const RiskMeter = ({ alignmentScore = 100, criticalCount = 0, warningCoun
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {criticalCount > 0 ? (
-              <ShieldAlert size={17} color={statusColor} />
+              <ShieldAlert size={18} color={statusColor} />
             ) : warningCount > 0 ? (
-              <AlertTriangle size={17} color={statusColor} />
+              <AlertTriangle size={18} color={statusColor} />
             ) : (
-              <ShieldCheck size={17} color={statusColor} />
+              <ShieldCheck size={18} color={statusColor} />
             )}
-            <h3 style={{ fontSize: '1.05rem', color: '#fff', fontWeight: 700 }}>
+            <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: 800 }}>
               {statusTitle}
             </h3>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '3px', lineHeight: 1.45 }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '3px', lineHeight: 1.45 }}>
             {statusSubtitle}
           </p>
         </div>
@@ -91,14 +91,14 @@ export const RiskMeter = ({ alignmentScore = 100, criticalCount = 0, warningCoun
           background: 'var(--risk-critical-bg)',
           border: '1px solid var(--risk-critical-border)',
           borderRadius: '8px',
-          padding: '6px 12px',
+          padding: '8px 14px',
           textAlign: 'center',
-          minWidth: '72px',
+          minWidth: '76px',
         }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--risk-critical)', lineHeight: 1 }}>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--risk-critical-text)', lineHeight: 1 }}>
             {criticalCount}
           </div>
-          <div style={{ fontSize: '0.62rem', color: '#fca5a5', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>
+          <div style={{ fontSize: '0.65rem', color: 'var(--risk-critical-text)', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>
             Critical
           </div>
         </div>
@@ -107,14 +107,14 @@ export const RiskMeter = ({ alignmentScore = 100, criticalCount = 0, warningCoun
           background: 'var(--risk-warning-bg)',
           border: '1px solid var(--risk-warning-border)',
           borderRadius: '8px',
-          padding: '6px 12px',
+          padding: '8px 14px',
           textAlign: 'center',
-          minWidth: '72px',
+          minWidth: '76px',
         }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--risk-warning)', lineHeight: 1 }}>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--risk-warning-text)', lineHeight: 1 }}>
             {warningCount}
           </div>
-          <div style={{ fontSize: '0.62rem', color: '#fde68a', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>
+          <div style={{ fontSize: '0.65rem', color: 'var(--risk-warning-text)', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>
             Warnings
           </div>
         </div>
@@ -123,14 +123,14 @@ export const RiskMeter = ({ alignmentScore = 100, criticalCount = 0, warningCoun
           background: 'var(--risk-safe-bg)',
           border: '1px solid var(--risk-safe-border)',
           borderRadius: '8px',
-          padding: '6px 12px',
+          padding: '8px 14px',
           textAlign: 'center',
-          minWidth: '72px',
+          minWidth: '76px',
         }}>
-          <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--risk-safe)', lineHeight: 1 }}>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--risk-safe-text)', lineHeight: 1 }}>
             {safeCount}
           </div>
-          <div style={{ fontSize: '0.62rem', color: '#6ee7b7', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>
+          <div style={{ fontSize: '0.65rem', color: 'var(--risk-safe-text)', textTransform: 'uppercase', marginTop: '2px', fontWeight: 700 }}>
             Compliant
           </div>
         </div>
