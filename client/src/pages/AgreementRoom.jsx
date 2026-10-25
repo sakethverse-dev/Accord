@@ -139,10 +139,10 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
     }
   };
 
-  const handleCompareDrafts = async (draftText, useSampleCounter = false) => {
+  const handleCompareDrafts = async (draftText) => {
     setActionLoading(true);
     try {
-      await api.agreements.compareDrafts(agreementId, { draftText, useSampleCounter });
+      await api.agreements.compareDrafts(agreementId, { draftText });
       await fetchAgreement();
       setActiveRoomTab('doc');
     } catch (err) {
@@ -1164,19 +1164,6 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             </div>
           ) : (
             <div>
-              {/* Quick Template Fill Buttons */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => handleCompareDrafts('', true)}
-                  disabled={actionLoading}
-                >
-                  <Sparkles size={13} color="var(--accent)" />
-                  Load Organization Enterprise MSA Counter-Terms
-                </button>
-              </div>
-
               <textarea
                 className="input-field"
                 rows={14}

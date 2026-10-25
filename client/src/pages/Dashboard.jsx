@@ -24,7 +24,6 @@ export const Dashboard = ({ onSelectAgreement }) => {
   const { user } = useAuth();
   const [agreements, setAgreements] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [creatingSample, setCreatingSample] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customTitle, setCustomTitle] = useState('');
   const [customText, setCustomText] = useState('');
@@ -50,18 +49,6 @@ export const Dashboard = ({ onSelectAgreement }) => {
     fetchAgreements();
   }, []);
 
-  const handleCreateSample = async () => {
-    setCreatingSample(true);
-    try {
-      const newAgreement = await api.agreements.create({ useSample: true });
-      onSelectAgreement(newAgreement._id);
-    } catch (err) {
-      alert(`Error loading agreement template: ${err.message}`);
-    } finally {
-      setCreatingSample(false);
-    }
-  };
-
   const handleCreateCustom = async (e) => {
     e.preventDefault();
     if (!customTitle.trim()) return;
@@ -71,7 +58,6 @@ export const Dashboard = ({ onSelectAgreement }) => {
       const newAgreement = await api.agreements.create({
         title: customTitle.trim(),
         rawText: customText.trim(),
-        useSample: false,
       });
       setShowCustomModal(false);
       setCustomTitle('');
@@ -127,16 +113,6 @@ export const Dashboard = ({ onSelectAgreement }) => {
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
-            className="btn btn-secondary"
-            onClick={handleCreateSample}
-            disabled={creatingSample}
-            id="btn-load-sample-contract"
-          >
-            <FileCheck size={14} color="var(--accent)" />
-            {creatingSample ? 'Generating Template...' : 'Standard Template'}
-          </button>
-
-          <button
             className="btn btn-primary"
             onClick={() => setShowCustomModal(true)}
             id="btn-create-custom-contract"
@@ -146,6 +122,7 @@ export const Dashboard = ({ onSelectAgreement }) => {
           </button>
         </div>
       </div>
+
 
       {/* 2. Institutional Executive Metrics Bar */}
       <div className="metrics-row">

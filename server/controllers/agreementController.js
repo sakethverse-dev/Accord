@@ -1,68 +1,59 @@
 const crypto = require('crypto');
 const Agreement = require('../models/Agreement');
 const User = require('../models/User');
-const { SAMPLE_CONTRACT, parseRawContractText } = require('../services/clauseExtractor');
+const { parseRawContractText } = require('../services/clauseExtractor');
 const { evaluateClause } = require('../services/policyEngine');
 const { calculateAgreementRisk } = require('../services/riskCalculator');
 const { verifyDocumentIntegrity } = require('../services/cryptoSeal');
-const { reconcileDrafts, reconcileDraftsAsync, ORGANIZATION_COUNTER_DRAFT } = require('../services/clauseReconciliation');
+const { reconcileDrafts, reconcileDraftsAsync } = require('../services/clauseReconciliation');
 const { auditDraftWithAI } = require('../services/geminiAiService');
 
-// @desc    Create a new agreement or load demo contract
+// @desc    Create a new agreement from user input
 // @route   POST /api/agreements
 // @access  Private
 const createAgreement = async (req, res, next) => {
   try {
-    const { title, rawText, useSample } = req.body;
+    const { title, rawText } = req.body;
     const user = await User.findById(req.user._id);
 
-    let agreementTitle = title || 'Software Development Services Agreement';
+    let agreementTitle = title ? title.trim() : 'Commercial Services Agreement';
     let auditedClauses = [];
-    let initialScore = 80;
 
-    if (!useSample && rawText && rawText.trim() !== '') {
-      // Rule-Free AI Dynamic Audit
-      try {
-        const aiAudit = await auditDraftWithAI(rawText, user?.role || 'freelancer');
-        if (aiAudit && Array.isArray(aiAudit.clauses) && aiAudit.clauses.length > 0) {
-          if (aiAudit.title && !title) agreementTitle = aiAudit.title;
-          auditedClauses = aiAudit.clauses.map((c, idx) => ({
-            clauseId: `clause-${idx + 1}`,
-            sectionNumber: c.sectionNumber || `Section ${idx + 1}`,
-            title: c.title || `Clause ${idx + 1}`,
-            category: c.category || 'GENERAL',
-            originalText: c.currentText || '',
-            currentText: c.currentText || '',
-            partyAText: c.currentText || '',
-            partyBText: '',
-            hasDraftConflict: false,
-            diffTokens: [],
-            riskLevel: c.riskLevel || 'SAFE',
-            riskReason: c.riskReason || '',
-            suggestedReplacement: c.suggestedReplacement || '',
-            status: 'ORIGINAL',
-          }));
-        }
-      } catch (err) {
-        console.warn('[CreateAgreement] Gemini AI audit error, using fallback:', err.message);
+    const textToProcess = (rawText && rawText.trim() !== '') 
+      ? rawText.trim() 
+      : `Section 1. Scope of Work\nContractor shall deliver professional services as mutually agreed in writing with Client.\n\nSection 2. Invoicing & Payment Terms\nAll invoices shall be submitted upon milestone delivery and shall be payable within thirty (30) calendar days (Net-30) of receipt.\n\nSection 3. Limitation of Liability\nNeither party aggregate liability arising out of or related to this Agreement shall exceed total fees paid or payable.\n\nSection 4. Intellectual Property & Deliverables\nOwnership and copyrights in bespoke project deliverables shall transfer to Client upon receipt of full payment.\n\nSection 5. Confidentiality\nBoth parties shall maintain the confidentiality of all proprietary technical and commercial information.`;
+
+    // Rule-Free AI Dynamic Audit with Gemini
+    try {
+      const aiAudit = await auditDraftWithAI(textToProcess, user?.role || 'freelancer');
+      if (aiAudit && Array.isArray(aiAudit.clauses) && aiAudit.clauses.length > 0) {
+        if (aiAudit.title && !title) agreementTitle = aiAudit.title;
+        auditedClauses = aiAudit.clauses.map((c, idx) => ({
+          clauseId: `clause-${idx + 1}`,
+          sectionNumber: c.sectionNumber || `Section ${idx + 1}`,
+          title: c.title || `Clause ${idx + 1}`,
+          category: c.category || 'GENERAL',
+          originalText: c.currentText || '',
+          currentText: c.currentText || '',
+          partyAText: c.currentText || '',
+          partyBText: '',
+          hasDraftConflict: false,
+          diffTokens: [],
+          riskLevel: c.riskLevel || 'SAFE',
+          riskReason: c.riskReason || '',
+          suggestedReplacement: c.suggestedReplacement || '',
+          status: 'ORIGINAL',
+        }));
       }
+    } catch (err) {
+      console.warn('[CreateAgreement] Gemini AI audit error, using fallback:', err.message);
     }
 
-    // Fallback or Sample if AI audit did not produce clauses
+    // Graceful fallback parser if AI audit did not produce clauses
     if (auditedClauses.length === 0) {
-      let rawClauses = [];
-      if (useSample) {
-        agreementTitle = SAMPLE_CONTRACT.title;
-        rawClauses = JSON.parse(JSON.stringify(SAMPLE_CONTRACT.clauses));
-      } else if (rawText && rawText.trim() !== '') {
-        rawClauses = parseRawContractText(rawText);
-      } else {
-        agreementTitle = SAMPLE_CONTRACT.title;
-        rawClauses = JSON.parse(JSON.stringify(SAMPLE_CONTRACT.clauses));
-      }
-
+      const rawClauses = parseRawContractText(textToProcess);
       auditedClauses = rawClauses.map((clause) => {
-        const evaluation = evaluateClause(clause, user.policyProfile, null);
+        const evaluation = evaluateClause(clause, user?.policyProfile, null);
         return {
           ...clause,
           category: evaluation.category,
@@ -77,9 +68,9 @@ const createAgreement = async (req, res, next) => {
     // Calculate overall risk score
     const riskMetrics = calculateAgreementRisk(auditedClauses);
 
-
     const inviteToken = crypto.randomBytes(8).toString('hex');
-    const initialDraftText = rawText || rawClauses.map((c) => `${c.sectionNumber || ''} ${c.title}\n${c.currentText}`).join('\n\n');
+    const initialDraftText = textToProcess;
+
 
     const agreement = await Agreement.create({
       title: agreementTitle,
@@ -257,7 +248,7 @@ const verifySeal = async (req, res, next) => {
 const compareDrafts = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { draftText, useSampleCounter } = req.body;
+    const { draftText } = req.body;
 
     const agreement = await Agreement.findById(id);
     if (!agreement) {
@@ -272,9 +263,9 @@ const compareDrafts = async (req, res, next) => {
       });
     }
 
-    const incomingText = useSampleCounter ? ORGANIZATION_COUNTER_DRAFT : (draftText || '');
-    if (!incomingText.trim()) {
-      return res.status(400).json({ success: false, message: 'Draft text cannot be empty.' });
+    const incomingText = (draftText || '').trim();
+    if (!incomingText) {
+      return res.status(400).json({ success: false, message: 'Draft text cannot be empty. Please enter your counterparty terms.' });
     }
 
     const isCreator = agreement.creator.toString() === req.user._id.toString();

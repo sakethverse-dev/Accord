@@ -1,39 +1,28 @@
 const mongoose = require('mongoose');
 
-let mongodInstance = null;
-
 const connectDB = async () => {
-  try {
-    let mongoUri = process.env.MONGODB_URI;
+  const mongoUri = process.env.MONGODB_URI?.trim() || 'mongodb://127.0.0.1:27017/pactflow';
 
-    if (mongoUri && mongoUri.trim() !== '') {
-      console.log('Connecting to specified MongoDB URI...');
-      await mongoose.connect(mongoUri);
-      console.log(`✅ MongoDB Connected to remote/local instance: ${mongoose.connection.host}`);
-    } else {
-      console.log('ℹ️ No MONGODB_URI provided. Initializing embedded in-memory MongoDB for zero-configuration evaluation...');
-      const { MongoMemoryServer } = require('mongodb-memory-server');
-      mongodInstance = await MongoMemoryServer.create();
-      const inMemoryUri = mongodInstance.getUri();
-      await mongoose.connect(inMemoryUri);
-      console.log(`✅ Embedded In-Memory MongoDB Connected at: ${inMemoryUri}`);
-      console.log('⚡ Evaluator Notice: Zero external database setup required. Ready to test immediately!');
-    }
+  try {
+    console.log(`Connecting to MongoDB at: ${mongoUri.includes('@') ? mongoUri.replace(/\/\/.*@/, '//<credentials>@') : mongoUri}...`);
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log(`✅ MongoDB Connected successfully: ${mongoose.connection.host}/${mongoose.connection.name}`);
   } catch (error) {
-    console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
+    console.error(`❌ MongoDB Connection Failed: ${error.message}`);
+    console.error(`👉 Please ensure MongoDB is running locally or specify your MONGODB_URI (e.g. MongoDB Atlas) in server/.env`);
+    throw error;
   }
 };
 
 const disconnectDB = async () => {
   try {
     await mongoose.disconnect();
-    if (mongodInstance) {
-      await mongodInstance.stop();
-    }
   } catch (error) {
     console.error('Error disconnecting DB:', error);
   }
 };
 
 module.exports = { connectDB, disconnectDB };
+

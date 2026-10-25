@@ -87,11 +87,11 @@ export const api = {
       return data.data;
     },
 
-    create: async ({ title, rawText, useSample }) => {
+    create: async ({ title, rawText }) => {
       const res = await fetch(`${API_BASE}/agreements`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ title, rawText, useSample }),
+        body: JSON.stringify({ title, rawText }),
       });
       const data = await handleResponse(res);
       return data.data;
@@ -114,11 +114,11 @@ export const api = {
       return data.data;
     },
 
-    compareDrafts: async (id, { draftText, useSampleCounter }) => {
+    compareDrafts: async (id, { draftText }) => {
       const res = await fetch(`${API_BASE}/agreements/${id}/compare-drafts`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ draftText, useSampleCounter }),
+        body: JSON.stringify({ draftText }),
       });
       const data = await handleResponse(res);
       return data.data;
