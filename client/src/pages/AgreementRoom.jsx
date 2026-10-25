@@ -363,54 +363,112 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
               Execution & Counterpart Signatures:
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px' }}>
               {/* Party A */}
-              <div style={{
-                background: 'var(--bg-muted)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: '10px',
-                padding: '16px',
-              }}>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                  Party A (Contractor)
-                </div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
-                  {agreement.creator?.name}
-                </div>
-                <div style={{ marginTop: '8px', fontSize: '0.75rem' }}>
-                  {agreement.signatures?.some(s => s.role === 'freelancer' || s.signedBy?._id === agreement.creator?._id) ? (
-                    <span style={{ color: 'var(--risk-safe-text)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <CheckCircle2 size={12} color="var(--risk-safe)" /> Digitally Signed & Affirmed
-                    </span>
-                  ) : (
-                    <span style={{ color: 'var(--text-muted)' }}>⏳ Awaiting Signature</span>
-                  )}
-                </div>
-              </div>
+              {(() => {
+                const sigPartyA = agreement.signatures?.find(s => s.signerRole === 'freelancer' || s.signedBy?._id === agreement.creator?._id || s.signedBy === agreement.creator?._id);
+                return (
+                  <div style={{
+                    background: 'var(--bg-muted)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '10px',
+                    padding: '16px',
+                  }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                      Party A ({agreement.creator?.role === 'client' ? 'Client' : 'Contractor'})
+                    </div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
+                      {agreement.creator?.name}
+                    </div>
+
+                    {sigPartyA ? (
+                      <div style={{ marginTop: '10px' }}>
+                        <div style={{
+                          background: '#ffffff',
+                          border: '1px solid var(--border-subtle)',
+                          borderRadius: '6px',
+                          padding: '6px 12px',
+                          marginBottom: '8px',
+                          minHeight: '44px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}>
+                          {sigPartyA.signatureImage ? (
+                            <img src={sigPartyA.signatureImage} alt="Digital Signature" style={{ maxHeight: '42px', maxWidth: '100%', objectFit: 'contain' }} />
+                          ) : (
+                            <span style={{ fontFamily: "'Caveat', cursive", fontSize: '1.6rem', color: '#0f172a' }}>{sigPartyA.signerName}</span>
+                          )}
+                        </div>
+
+                        <div style={{ fontSize: '0.72rem', color: 'var(--risk-safe-text)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <CheckCircle2 size={12} color="var(--risk-safe)" /> Digitally Signed & Affirmed
+                        </div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {new Date(sigPartyA.signedAt).toLocaleString()} • IP: {sigPartyA.ipAddress || '127.0.0.1'}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ marginTop: '14px', fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <Clock size={13} />
+                        <span>Awaiting Digital Signature</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Party B */}
-              <div style={{
-                background: 'var(--bg-muted)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: '10px',
-                padding: '16px',
-              }}>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                  Party B ({agreement.creator?.role === 'client' ? 'Contractor' : 'Client'})
-                </div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
-                  {agreement.invitedParty?.name || (agreement.creator?.role === 'client' ? 'Alex Rivera' : 'Sarah Chen')}
-                </div>
-                <div style={{ marginTop: '8px', fontSize: '0.75rem' }}>
-                  {agreement.signatures?.some(s => s.role === 'client' || (agreement.invitedParty && s.signedBy?._id === agreement.invitedParty?._id)) ? (
-                    <span style={{ color: 'var(--risk-safe-text)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <CheckCircle2 size={12} color="var(--risk-safe)" /> Digitally Signed & Affirmed
-                    </span>
-                  ) : (
-                    <span style={{ color: 'var(--text-muted)' }}>⏳ Awaiting Signature</span>
-                  )}
-                </div>
-              </div>
+              {(() => {
+                const sigPartyB = agreement.signatures?.find(s => s.signerRole === 'client' || (agreement.invitedParty && (s.signedBy?._id === agreement.invitedParty?._id || s.signedBy === agreement.invitedParty?._id)));
+                return (
+                  <div style={{
+                    background: 'var(--bg-muted)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '10px',
+                    padding: '16px',
+                  }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                      Party B ({agreement.creator?.role === 'client' ? 'Contractor' : 'Client'})
+                    </div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
+                      {agreement.invitedParty?.name || (agreement.creator?.role === 'client' ? 'Alex Rivera' : 'Sarah Chen')}
+                    </div>
+
+                    {sigPartyB ? (
+                      <div style={{ marginTop: '10px' }}>
+                        <div style={{
+                          background: '#ffffff',
+                          border: '1px solid var(--border-subtle)',
+                          borderRadius: '6px',
+                          padding: '6px 12px',
+                          marginBottom: '8px',
+                          minHeight: '44px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}>
+                          {sigPartyB.signatureImage ? (
+                            <img src={sigPartyB.signatureImage} alt="Digital Signature" style={{ maxHeight: '42px', maxWidth: '100%', objectFit: 'contain' }} />
+                          ) : (
+                            <span style={{ fontFamily: "'Caveat', cursive", fontSize: '1.6rem', color: '#0f172a' }}>{sigPartyB.signerName}</span>
+                          )}
+                        </div>
+
+                        <div style={{ fontSize: '0.72rem', color: 'var(--risk-safe-text)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <CheckCircle2 size={12} color="var(--risk-safe)" /> Digitally Signed & Affirmed
+                        </div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          {new Date(sigPartyB.signedAt).toLocaleString()} • IP: {sigPartyB.ipAddress || '127.0.0.1'}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ marginTop: '14px', fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <Clock size={13} />
+                        <span>Awaiting Digital Signature</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* If Fully Executed Seal */}

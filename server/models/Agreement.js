@@ -133,6 +133,10 @@ const signatureSchema = new mongoose.Schema({
     type: String,
     default: 'Unknown Browser',
   },
+  signatureImage: {
+    type: String,
+    default: '',
+  },
 }, { _id: false });
 
 const auditLogSchema = new mongoose.Schema({

@@ -150,6 +150,25 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
                     <CheckCircle2 size={13} />
                     <strong style={{ color: 'var(--text-main)', fontSize: '0.85rem' }}>{sig.signerName}</strong>
                   </div>
+
+                  {/* Signature visual stamp */}
+                  <div style={{
+                    background: '#ffffff',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    margin: '6px 0',
+                    minHeight: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}>
+                    {sig.signatureImage ? (
+                      <img src={sig.signatureImage} alt="Signature Stamp" style={{ maxHeight: '32px', maxWidth: '100%', objectFit: 'contain' }} />
+                    ) : (
+                      <span style={{ fontFamily: "'Caveat', cursive", fontSize: '1.4rem', color: '#0f172a' }}>{sig.signerName}</span>
+                    )}
+                  </div>
+
                   <div style={{ fontSize: '0.72rem', color: 'var(--accent)', textTransform: 'capitalize', fontWeight: 700 }}>
                     {sig.signerRole}
                   </div>

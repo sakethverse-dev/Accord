@@ -6,7 +6,7 @@ const { generateDocumentSeal } = require('../services/cryptoSeal');
 // @access  Private
 const signAgreement = async (req, res, next) => {
   try {
-    const { signerName, affirmationChecked } = req.body;
+    const { signerName, affirmationChecked, signatureImage } = req.body;
     const { id: agreementId } = req.params;
 
     if (!affirmationChecked) {
@@ -56,6 +56,7 @@ const signAgreement = async (req, res, next) => {
       signerRole: req.user.role,
       signerEmail: req.user.email,
       legalAffirmationText: 'I hereby declare under penalty of perjury that I have reviewed all terms, and I intend this electronic signature to be legally binding.',
+      signatureImage: signatureImage || '',
       signedAt: new Date(),
       ipAddress: clientIp,
       userAgent: clientUserAgent,

@@ -142,6 +142,18 @@ const respondToProposal = async (req, res, next) => {
       agreement.criticalRiskCount = newRiskMetrics.criticalRiskCount;
       agreement.warningRiskCount = newRiskMetrics.warningRiskCount;
 
+      // If any party had previously signed before this amendment, invalidate prior signatures
+      if (agreement.signatures && agreement.signatures.length > 0) {
+        agreement.signatures = [];
+        agreement.auditLogs.push({
+          action: 'SIGNATURES_VOIDED',
+          performedBy: req.user.name,
+          performedByRole: req.user.role,
+          timestamp: new Date(),
+          details: 'Previous digital signatures invalidated because agreement terms were amended. Re-execution required.',
+        });
+      }
+
       // Check if all proposals resolved & no critical risks remain
       const hasPendingProposals = agreement.proposals.some((p) => p.status === 'PENDING');
       if (!hasPendingProposals && newRiskMetrics.criticalRiskCount === 0) {
