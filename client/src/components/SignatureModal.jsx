@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, CheckCircle, Shield, FileCheck } from 'lucide-react';
+import { X, Lock, FileCheck, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
@@ -30,28 +30,28 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ padding: '32px' }}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ padding: '26px' }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '10px',
-              background: 'rgba(16, 185, 129, 0.15)',
+              width: '38px',
+              height: '38px',
+              borderRadius: '9px',
+              background: 'var(--risk-safe-bg)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              border: '1px solid var(--risk-safe-border)',
             }}>
-              <FileCheck size={22} color="var(--risk-safe)" />
+              <FileCheck size={20} color="var(--risk-safe)" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.25rem', color: '#fff' }}>
-                Electronic Signature & Execution
+              <h3 style={{ fontSize: '1.15rem', color: '#fff', fontWeight: 700 }}>
+                Digital Contract Execution
               </h3>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                Compliant with ESIGN & eIDAS digital contracting standards
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                ESIGN & eIDAS legally binding electronic signature
               </p>
             </div>
           </div>
@@ -59,30 +59,30 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
             onClick={onClose}
             style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Info Banner */}
         <div style={{
-          background: 'rgba(15, 23, 42, 0.8)',
+          background: 'rgba(10, 16, 30, 0.75)',
           border: '1px solid var(--border-subtle)',
-          borderRadius: '10px',
-          padding: '14px 16px',
-          marginBottom: '20px',
-          fontSize: '0.85rem',
-          color: '#cbd5e1',
+          borderRadius: '8px',
+          padding: '12px 14px',
+          marginBottom: '16px',
+          fontSize: '0.825rem',
+          color: 'var(--text-secondary)',
           lineHeight: 1.5,
         }}>
-          Executing agreement: <strong style={{ color: '#fff' }}>"{agreementTitle}"</strong>.
-          Upon signature by both parties, this document will be cryptographically locked with a SHA-256 seal and cannot be modified.
+          Executing: <strong style={{ color: '#fff' }}>"{agreementTitle}"</strong>.
+          Upon signature by both parties, this agreement is sealed with an immutable SHA-256 hash.
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Signer Legal Name */}
-          <div style={{ marginBottom: '18px' }}>
-            <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px', display: 'block' }}>
-              Full Legal Signer Name:
+          <div style={{ marginBottom: '14px' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '5px', display: 'block' }}>
+              Full Legal Signer Name
             </label>
             <input
               type="text"
@@ -92,41 +92,42 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
               placeholder="e.g. Alex Rivera"
               required
               id="input-signer-name"
-              style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 600 }}
+              style={{ fontFamily: 'var(--font-heading)', fontSize: '0.95rem', fontWeight: 600 }}
             />
           </div>
 
-          {/* Signer Meta Details */}
+          {/* Signer Meta Details (Responsive wrap) */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '12px',
-            marginBottom: '20px',
-            fontSize: '0.8rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '10px',
+            marginBottom: '16px',
+            fontSize: '0.78rem',
             color: 'var(--text-muted)',
-            background: 'rgba(10, 15, 29, 0.5)',
-            padding: '12px',
+            background: 'rgba(8, 12, 22, 0.6)',
+            padding: '10px 12px',
             borderRadius: '8px',
+            border: '1px solid var(--border-subtle)',
           }}>
             <div>
-              <span style={{ color: 'var(--text-dim)' }}>Role: </span>
+              <span style={{ color: 'var(--text-dim)' }}>Signer Role: </span>
               <strong style={{ color: '#fff', textTransform: 'capitalize' }}>{user?.role}</strong>
             </div>
             <div>
-              <span style={{ color: 'var(--text-dim)' }}>Verified Email: </span>
+              <span style={{ color: 'var(--text-dim)' }}>Verified ID: </span>
               <strong style={{ color: '#fff' }}>{user?.email}</strong>
             </div>
           </div>
 
           {/* Mandatory Affirmation Checkbox */}
           <div style={{
-            background: 'rgba(16, 185, 129, 0.08)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: '10px',
-            padding: '14px',
-            marginBottom: '24px',
+            background: 'var(--risk-safe-bg)',
+            border: '1px solid var(--risk-safe-border)',
+            borderRadius: '8px',
+            padding: '12px',
+            marginBottom: '20px',
           }}>
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '9px', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 id="checkbox-legal-affirmation"
@@ -135,14 +136,14 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
                 style={{ marginTop: '3px', cursor: 'pointer', accentColor: 'var(--risk-safe)' }}
                 required
               />
-              <span style={{ fontSize: '0.825rem', color: '#e2e8f0', lineHeight: 1.45 }}>
+              <span style={{ fontSize: '0.8rem', color: '#e2e8f0', lineHeight: 1.45 }}>
                 I hereby declare under penalty of perjury that I have reviewed the terms of this agreement and intend this electronic signature to be legally binding and effective.
               </span>
             </label>
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
@@ -152,7 +153,7 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
               disabled={loading || !affirmationChecked || !signerName.trim()}
               id="btn-confirm-sign"
             >
-              <Lock size={15} />
+              <Lock size={14} />
               {loading ? 'Affixing Seal...' : 'Sign & Execute Agreement'}
             </button>
           </div>
