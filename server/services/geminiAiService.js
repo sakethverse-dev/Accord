@@ -172,7 +172,8 @@ ${rawText}
  * Rewrite or improve a specific clause interactively based on user instruction
  */
 async function improveClauseWithAI({ clauseTitle, currentText, instruction, userRole = 'freelancer' }) {
-  const prompt = `
+  try {
+    const prompt = `
 You are an expert contract attorney assisting a ${userRole}.
 Improve and rewrite the following contract clause based on the user's specific instruction.
 
@@ -191,7 +192,39 @@ Return a STRICT JSON object:
 }
 `;
 
-  return await callGemini(prompt, 'You are an expert legal drafting assistant. Output strictly valid JSON.', true);
+    return await callGemini(prompt, 'You are an expert legal drafting assistant. Output strictly valid JSON.', true);
+  } catch (err) {
+    console.warn('[GeminiAI] Interactive clause rewrite failed, activating deterministic legal fallback:', err.message);
+
+    // Deterministic fallback based on clause subject
+    let improvedText = currentText;
+    let rationale = 'Refined for commercial clarity, statutory compliance, and mutual balance under local legal synthesis.';
+
+    const combined = `${clauseTitle} ${currentText}`.toLowerCase();
+
+    if (/payment|net|fee|invoice/i.test(combined)) {
+      improvedText = 'Contractor shall invoice Client upon completion of agreed milestone deliverables. All undisputed invoices shall be payable by Client within thirty (30) calendar days of receipt (Net-30), independent of third-party payment clearances.';
+      rationale = 'Replaced with standard commercial Net-30 payment terms and milestone billing structure.';
+    } else if (/liability|indemnif|hold harmless/i.test(combined)) {
+      improvedText = "Neither party's total aggregate liability arising out of or related to this Agreement shall exceed two times (2x) the total fees paid or payable under this Agreement, except in cases of gross negligence, willful misconduct, or breach of confidentiality.";
+      rationale = 'Added reciprocal mutual liability ceiling (2x contract fee) preventing disproportionate financial exposure.';
+    } else if (/intellectual property|ip|ownership|copyright/i.test(combined)) {
+      improvedText = 'Upon receipt of full and final payment for completed deliverables, Contractor assigns to Client all worldwide copyright and title in bespoke work product, while Contractor retains ownership of pre-existing tools and open-source components.';
+      rationale = 'Structured clean IP assignment conditioned on full payment receipt with pre-existing tool carveouts.';
+    } else if (/non-compete|exclusiv/i.test(combined)) {
+      improvedText = 'Contractor provides services as an independent contractor and reserves the right to perform non-competing services for other clients, provided Contractor strictly maintains Client confidentiality.';
+      rationale = 'Removed void restrictive covenants in compliance with Section 27 of the Indian Contract Act, 1872.';
+    } else {
+      improvedText = `${currentText.trim()}\n\nBoth parties agree to execute all obligations under this Section in good faith, with reasonable notice of any disputes prior to formal legal escalation.`;
+      rationale = 'Added mutual good-faith covenants and formal dispute remediation mechanisms.';
+    }
+
+    return {
+      improvedText,
+      rationale,
+      isFallback: true,
+    };
+  }
 }
 
 module.exports = {
