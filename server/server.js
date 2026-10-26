@@ -36,8 +36,8 @@ app.use(cors({
 
     const cleanOrigin = origin.replace(/\/$/, '');
 
-    // 2. Automatically allow any Render deployment (*.onrender.com)
-    if (cleanOrigin.endsWith('.onrender.com')) {
+    // 2. Automatically allow any Render deployment (*.onrender.com) or Vercel deployment (*.vercel.app)
+    if (cleanOrigin.endsWith('.onrender.com') || cleanOrigin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
 
@@ -87,7 +87,14 @@ const authLimiter = rateLimit({
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
-// Health check endpoint
+// Health check endpoints (matches Student Deployment Guide Section 7)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Server is running',
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ONLINE',

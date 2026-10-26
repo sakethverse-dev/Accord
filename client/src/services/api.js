@@ -1,8 +1,9 @@
 /**
  * Centralized API Service for PactFlow
  */
-
-const API_BASE = '/api';
+// Support both unified Render hosting and external Vercel hosting via VITE_API_URL
+const RAW_API_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
+const API_BASE = RAW_API_URL ? `${RAW_API_URL}/api` : '/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('pactflow_token');
