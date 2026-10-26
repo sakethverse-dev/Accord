@@ -14,10 +14,10 @@
 ---
 
 ## 1. Problem Statement
-Every freelancer, independent contractor, and small agency regularly signs client agreements (Master Service Agreements, NDAs, Subcontractor Contracts). Without the budget for $400/hour legal counsel, contractors frequently sign contracts containing **predatory terms**:
+Every freelancer, independent contractor, and small software agency regularly signs client agreements (Master Service Agreements, NDAs, Subcontractor Contracts). Without the budget for ₹25,000/hour legal counsel, contractors frequently sign contracts containing **predatory terms**:
 * **Unlimited Liability:** Exposing individual developers to catastrophic financial lawsuits exceeding the total project value.
 * **Unreasonable Payment Windows:** Net-90 or "Pay-when-paid" clauses that subordinate contractor payroll to third-party collections.
-* **Aggressive Non-Competes:** Barring developers from taking work in their domain or industry for years.
+* **Aggressive Non-Competes:** Barring developers from taking work in their domain or industry for years (in direct violation of Section 27 of the Indian Contract Act).
 * **Immediate IP Transfers:** Forfeiting ownership of code before invoices are paid in full.
 
 Traditional document workflows involve dozens of fragmented emails with confusing Word redlines, causing weeks of delay or contractors signing dangerous terms out of exhaustion.
@@ -168,8 +168,26 @@ CLIENT_URL=http://localhost:5173
 
 ---
 
-## 10. Security & Legal Considerations
-* **No Plaintext Passwords:** All credentials hashed with `bcryptjs` (salt rounds = 10).
-* **Stateless JWT Authorization:** Secured endpoints with token verification and role checks.
-* **Legal Intent Affirmation:** Meets the legal requirements of the US ESIGN Act and international e-signature frameworks by requiring affirmative declaration of intent to be bound.
-* **Document Immutability:** Once an agreement is executed by both parties, API controllers permanently reject any mutation requests.
+## 10. Applicable Laws & Legal Enforceability
+
+Accord is engineered in strict compliance with electronic contracting jurisprudence and statutory legal frameworks:
+
+### A. Indian Legal Framework
+1. **Information Technology Act, 2000 (IT Act, 2000) — Section 10A:**
+   * **Statutory Validity:** Explicitly provides that contracts formed through electronic records and digital communications are legally valid, binding, and enforceable in India.
+   * **Electronic Signatures (Section 4 & 5):** Grants electronic signatures equal legal parity with handwritten physical signatures when accompanied by intent and verifiable authenticity.
+2. **The Indian Contract Act, 1872:**
+   * **Consensus Ad Idem (Section 10 & 13):** A contract requires true "meeting of the minds". Accord's bilateral redlining ensures that no clause can be altered without explicit counterparty review and mutual adoption.
+   * **Restraint of Trade Prohibition (Section 27):** Under Indian law, restrictive post-termination non-compete covenants against independent professionals are void. Accord's policy engine automatically flags non-compete clauses as critical legal violations.
+3. **Bharatiya Sakshya Adhiniyam, 2023 / Indian Evidence Act (Section 65B):**
+   * **Electronic Evidence Admissibility:** Accord generates an immutable audit trail capturing UTC timestamps, signer IP records, and a canonical SHA-256 cryptographic hash satisfying statutory requirements for electronic evidence in legal disputes.
+
+### B. Cross-Border & International Frameworks
+* **US Electronic Signatures in Global and National Commerce Act (ESIGN Act, 2000) & UETA:** Validates digital consent, intent to sign, and record retention for US/global clients.
+* **EU eIDAS Regulation (Regulation (EU) No 910/2014):** Standards for electronic signatures and cross-border commercial transactions.
+* **UNCITRAL Model Law on Electronic Commerce (1996):** Globally recognized baseline for paperless international trade and contract enforceability.
+
+### C. Technical Security Controls
+* **Zero Plaintext Passwords:** Credentials protected via `bcryptjs` (salt rounds = 10).
+* **Stateless Cryptographic JWTs:** Role-based token authentication (`freelancer` vs `client`).
+* **Document Immutability:** Once both parties sign, database write locks permanently prevent further alteration.

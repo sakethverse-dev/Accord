@@ -190,7 +190,7 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal, agree
               className="input-field"
               value={aiInstruction}
               onChange={(e) => setAiInstruction(e.target.value)}
-              placeholder="e.g. Cap liability at $50k and make warranties 60 days..."
+              placeholder="e.g. Cap liability at ₹5 Lakhs (or 1x fees) and make warranties 60 days..."
               style={{ fontSize: '0.8rem', padding: '6px 10px', flex: 1 }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {

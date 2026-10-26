@@ -149,7 +149,7 @@ export const downloadAgreementPdf = async (agreement) => {
         Execution & Digital Affirmations
       </div>
       <div style="font-size: 10px; color: #4b5563; line-height: 1.5; margin-bottom: 18px;">
-        IN WITNESS WHEREOF, the parties hereto have caused this Agreement to be executed by their duly authorized representatives by electronic signature under the US Electronic Signatures in Global and National Commerce Act (ESIGN) and Uniform Electronic Transactions Act (UETA).
+        IN WITNESS WHEREOF, the parties hereto have caused this Agreement to be executed by their duly authorized representatives by electronic signature in accordance with Section 10A of the Information Technology Act, 2000 (India), the Indian Contract Act, 1872, and the Electronic Signatures in Global and National Commerce Act (ESIGN).
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">

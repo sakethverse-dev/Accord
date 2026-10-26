@@ -170,7 +170,7 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
                 Digital Signature Execution
               </h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Legally binding e-signature under ESIGN & UETA Acts
+                Legally binding e-signature under IT Act 2000 (Sec 10A) & ESIGN Act
               </p>
             </div>
           </div>
@@ -482,7 +482,7 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
                 required
               />
               <span style={{ fontSize: '0.78rem', color: 'var(--text-main)', lineHeight: 1.45, fontWeight: 500 }}>
-                I hereby declare under penalty of perjury that I have reviewed the terms of this agreement and intend this electronic signature to be legally binding and effective.
+                I hereby affirm under the Information Technology Act, 2000 (Sec 10A) and Indian Contract Act, 1872 that I have reviewed the terms of this agreement and intend this electronic signature to be legally binding and effective.
               </span>
             </label>
           </div>
