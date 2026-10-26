@@ -3,6 +3,14 @@
 > **End-Term Software Engineering Project Submission**  
 > An institutional legal risk auditing, bilateral redline negotiation, and cryptographic tamper-evident consensus platform connecting freelancers and enterprises.
 
+**Live Application:** [https://accord-zwby.onrender.com](https://accord-zwby.onrender.com)  
+**GitHub Repository:** [https://github.com/sakethverse-dev/Accord](https://github.com/sakethverse-dev/Accord)  
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Contractor (Party A)** | `saketh@gmail.com` | `saketh123` |
+| **Enterprise Client (Party B)** | `client@apexinnovations.com` | `client123` |
+
 ---
 
 ## 1. Problem Statement
