@@ -218,14 +218,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
   return (
     <div style={{ width: '100%' }}>
       {/* 1. Header Navigation Bar */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '20px',
-        flexWrap: 'wrap',
-        gap: '12px',
-      }}>
+      <div className="room-header-container">
         {/* Left: Breadcrumbs & Document Title */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
@@ -257,7 +250,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
         </div>
 
         {/* Right: Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div className="room-header-actions">
           <button
             className="btn btn-secondary btn-sm"
             onClick={handleCopyInvite}
@@ -265,11 +258,11 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             id="btn-share-room"
           >
             {copiedLink ? <Check size={13} color="var(--risk-safe)" /> : <Share2 size={13} />}
-            {copiedLink ? 'Link Copied to Clipboard' : 'Share Room Link'}
+            {copiedLink ? 'Link Copied' : 'Share Room Link'}
           </button>
 
           {isLocked ? (
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <button
                 className="btn btn-secondary btn-sm"
                 onClick={() => setShowCertModal(true)}
@@ -304,32 +297,16 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
       </div>
 
       {/* 2. Collaborative Negotiation Workflow Steps Ribbon */}
-      <div style={{
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: '12px',
-        padding: '12px 18px',
-        marginBottom: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '12px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              background: agreement.partyBDraft?.text ? 'var(--risk-safe-bg)' : 'var(--accent-bg)',
-              color: agreement.partyBDraft?.text ? 'var(--risk-safe-text)' : 'var(--accent)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-            }}>
+      <div className="room-workflow-ribbon">
+        <div className="room-workflow-steps">
+          <div className="workflow-step-item">
+            <div
+              className="workflow-step-num"
+              style={{
+                background: agreement.partyBDraft?.text ? 'var(--risk-safe-bg)' : 'var(--accent-bg)',
+                color: agreement.partyBDraft?.text ? 'var(--risk-safe-text)' : 'var(--accent)',
+              }}
+            >
               1
             </div>
             <div>
@@ -340,21 +317,16 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             </div>
           </div>
 
-          <div style={{ color: 'var(--text-dim)' }}>→</div>
+          <div className="workflow-step-arrow">→</div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              background: criticalCount === 0 ? 'var(--risk-safe-bg)' : 'var(--risk-warning-bg)',
-              color: criticalCount === 0 ? 'var(--risk-safe-text)' : 'var(--risk-warning-text)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-            }}>
+          <div className="workflow-step-item">
+            <div
+              className="workflow-step-num"
+              style={{
+                background: criticalCount === 0 ? 'var(--risk-safe-bg)' : 'var(--risk-warning-bg)',
+                color: criticalCount === 0 ? 'var(--risk-safe-text)' : 'var(--risk-warning-text)',
+              }}
+            >
               2
             </div>
             <div>
@@ -365,21 +337,16 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             </div>
           </div>
 
-          <div style={{ color: 'var(--text-dim)' }}>→</div>
+          <div className="workflow-step-arrow">→</div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              background: isLocked ? 'var(--risk-safe-bg)' : hasAnySigned ? 'var(--accent-bg)' : 'var(--bg-muted)',
-              color: isLocked ? 'var(--risk-safe-text)' : hasAnySigned ? 'var(--accent)' : 'var(--text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-            }}>
+          <div className="workflow-step-item">
+            <div
+              className="workflow-step-num"
+              style={{
+                background: isLocked ? 'var(--risk-safe-bg)' : hasAnySigned ? 'var(--accent-bg)' : 'var(--bg-muted)',
+                color: isLocked ? 'var(--risk-safe-text)' : hasAnySigned ? 'var(--accent)' : 'var(--text-muted)',
+              }}
+            >
               3
             </div>
             <div>
@@ -392,14 +359,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
         </div>
 
         {/* Room View Switcher Tabs */}
-        <div style={{
-          display: 'flex',
-          background: 'var(--bg-muted)',
-          padding: '3px',
-          borderRadius: '8px',
-          border: '1px solid var(--border-subtle)',
-          gap: '3px',
-        }}>
+        <div className="room-tabs-container">
           <button
             onClick={() => setActiveRoomTab('doc')}
             style={{
@@ -437,7 +397,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             }}
           >
             <Columns size={13} />
-            <span>Side-by-Side Drafts</span>
+            <span>Side-by-Side</span>
           </button>
 
           <button
@@ -457,7 +417,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             }}
           >
             <Edit3 size={13} />
-            <span>Submit / Edit Draft</span>
+            <span>Counter-Draft</span>
           </button>
         </div>
       </div>
@@ -546,12 +506,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           TAB 1: MASTER AGREEMENT & ACTIVE COMPROMISES
           ========================================================================= */}
       {activeRoomTab === 'doc' && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.9fr) minmax(320px, 1.1fr)',
-          gap: '28px',
-          alignItems: 'start',
-        }}>
+        <div className="room-doc-grid">
           {/* LEFT: AUTHENTIC LEGAL DOCUMENT PAPER */}
           <div className="legal-doc-paper">
             {/* Formal Legal Preamble */}
@@ -788,7 +743,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                 Execution & Counterpart Signatures:
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+              <div className="room-signatures-grid">
                 {/* Party A */}
                 {(() => {
                   const sigPartyA = agreement.signatures?.find(s => s.signerRole === 'freelancer' || s.signedBy?._id === agreement.creator?._id || s.signedBy === agreement.creator?._id);
@@ -898,25 +853,14 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
 
               {/* If Fully Executed Seal */}
               {isLocked && agreement.cryptoSeal?.sha256Hash && (
-                <div style={{
-                  marginTop: '18px',
-                  background: 'var(--risk-safe-bg)',
-                  border: '1px solid var(--risk-safe-border)',
-                  borderRadius: '8px',
-                  padding: '12px 14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '10px',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <ShieldCheck size={18} color="var(--risk-safe)" />
-                    <div>
+                <div className="room-seal-card">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                    <ShieldCheck size={20} color="var(--risk-safe)" style={{ flexShrink: 0 }} />
+                    <div style={{ minWidth: 0, flex: 1 }}>
                       <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--risk-safe-text)' }}>
                         Cryptographically Sealed Agreement
                       </div>
-                      <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--risk-safe-text)' }}>
+                      <div className="room-seal-hash">
                         SHA-256: {agreement.cryptoSeal.sha256Hash}
                       </div>
                     </div>
@@ -925,7 +869,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
                   <button
                     className="btn btn-secondary btn-sm"
                     onClick={() => setShowCertModal(true)}
-                    style={{ background: '#ffffff', fontSize: '0.72rem' }}
+                    style={{ background: '#ffffff', fontSize: '0.72rem', flexShrink: 0 }}
                   >
                     View Audit Certificate
                   </button>
@@ -935,7 +879,7 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           </div>
 
           {/* RIGHT: STREAMLINED CONTROL CENTER */}
-          <div style={{ position: 'sticky', top: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="room-control-sidebar">
             {/* Consensus & Alignment Status */}
             <div style={{
               background: 'var(--bg-surface)',

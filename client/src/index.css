@@ -579,3 +579,274 @@ code, pre {
     display: flex;
   }
 }
+
+/* ==========================================================================
+   Responsive Agreement Room & Dashboard Components
+   ========================================================================== */
+
+/* Room Header Container */
+.room-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.room-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Collaborative Negotiation Workflow Ribbon */
+.room-workflow-ribbon {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.room-workflow-steps {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.workflow-step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.workflow-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.workflow-step-arrow {
+  color: var(--text-dim);
+  user-select: none;
+}
+
+/* Room View Switcher Tabs */
+.room-tabs-container {
+  display: flex;
+  background: var(--bg-muted);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  gap: 3px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.room-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Agreement Room Document & Sidebar Grid */
+.room-doc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(320px, 1.1fr);
+  gap: 28px;
+  align-items: start;
+}
+.room-control-sidebar {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Cryptographic Seal & Verification Card */
+.room-seal-card {
+  margin-top: 18px;
+  background: var(--risk-safe-bg);
+  border: 1px solid var(--risk-safe-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.room-seal-hash {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--risk-safe-text);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+/* Signatures Grid */
+.room-signatures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* Dashboard Toolbar */
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.dashboard-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .room-doc-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .room-control-sidebar {
+    position: static;
+    top: auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .room-workflow-ribbon {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 14px;
+  }
+  .room-workflow-steps {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .workflow-step-arrow {
+    display: none !important;
+  }
+  .room-tabs-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .room-tabs-container button {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-main-content {
+    padding: 16px 14px 96px !important;
+  }
+  .room-header-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .room-header-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .room-header-actions .btn,
+  .room-header-actions > div {
+    flex: 1;
+    display: flex;
+  }
+  .room-header-actions .btn {
+    justify-content: center;
+  }
+  .room-seal-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .room-seal-card button {
+    width: 100%;
+    justify-content: center;
+  }
+  .room-signatures-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .metric-tile {
+    padding: 12px 14px !important;
+  }
+  .metric-tile-val {
+    font-size: 1.4rem !important;
+  }
+  .metric-tile-label {
+    font-size: 0.65rem !important;
+  }
+  .dashboard-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .dashboard-search-bar {
+    width: 100%;
+  }
+  .dashboard-search-bar > div:first-child {
+    flex: 1;
+  }
+  .dashboard-search-bar input {
+    width: 100% !important;
+  }
+  .filter-tabs {
+    width: 100%;
+    padding-bottom: 6px;
+  }
+  .legal-doc-paper {
+    padding: 20px 16px !important;
+    border-radius: 10px !important;
+  }
+  .clause-item {
+    padding: 14px 14px !important;
+  }
+}
+
+/* Clean Paper Print Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .app-sidebar,
+  .mobile-bottom-nav,
+  .mobile-header,
+  .room-workflow-ribbon,
+  .room-tabs-container,
+  .room-control-sidebar,
+  .room-header-actions {
+    display: none !important;
+  }
+  .room-doc-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .legal-doc-paper {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}

@@ -179,14 +179,7 @@ export const Dashboard = ({ onSelectAgreement, onOpenTemplate }) => {
       </div>
 
       {/* 3. Filter Tabs & Search Bar */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '12px',
-        marginBottom: '16px',
-      }}>
+      <div className="dashboard-toolbar">
         {/* Filter Pills */}
         <div className="filter-tabs">
           <button
@@ -216,8 +209,8 @@ export const Dashboard = ({ onSelectAgreement, onOpenTemplate }) => {
         </div>
 
         {/* Search & Refresh */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ position: 'relative' }}>
+        <div className="dashboard-search-bar">
+          <div className="dashboard-search-box" style={{ position: 'relative' }}>
             <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '10px' }} />
             <input
               type="text"

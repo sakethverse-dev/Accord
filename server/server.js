@@ -7,7 +7,9 @@ const dotenv = require('dotenv');
 const { connectDB } = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
-// Load environment variables
+// Load environment variables (support server/.env as well as root .env)
+const path = require('path');
+dotenv.config({ path: path.join(__dirname, '.env') });
 dotenv.config();
 
 const app = express();
@@ -101,7 +103,6 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/agreements', require('./routes/agreementRoutes'));
 
 // Serve static frontend assets in production
-const path = require('path');
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.resolve(__dirname, '../client/dist');
   app.use(express.static(distPath));

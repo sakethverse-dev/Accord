@@ -23,19 +23,17 @@ export const downloadAgreementPdf = async (agreement) => {
   const refId = `PF-${agreement._id.slice(-8).toUpperCase()}`;
   const filename = `${agreement.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_Executed_${refId}.pdf`;
 
-  // Create an off-screen container for rendering the formal legal document
+  // Create rendering container in normal flow for correct height calculation
   const printContainer = document.createElement('div');
   printContainer.id = 'accord-pdf-render-container';
-  printContainer.style.position = 'fixed';
-  printContainer.style.left = '-9999px';
-  printContainer.style.top = '0';
   printContainer.style.width = '794px'; // Standard A4 width at 96 DPI
-  printContainer.style.padding = '40px 48px';
-  printContainer.style.background = '#ffffff';
+  printContainer.style.padding = '36px 44px';
+  printContainer.style.backgroundColor = '#ffffff';
   printContainer.style.color = '#111827';
   printContainer.style.fontFamily = "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   printContainer.style.lineHeight = '1.6';
   printContainer.style.fontSize = '12px';
+  printContainer.style.boxSizing = 'border-box';
 
   const sealedAt = agreement.cryptoSeal?.sealedAt 
     ? new Date(agreement.cryptoSeal.sealedAt).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })
@@ -224,25 +222,26 @@ export const downloadAgreementPdf = async (agreement) => {
     </div>
   `;
 
-  document.body.appendChild(printContainer);
-
   const opt = {
     margin: [10, 10, 12, 10], // top, left, bottom, right in mm
     filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true, 
+      letterRendering: true,
+      logging: false,
+    },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
   };
 
   try {
-    await html2pdf().set(opt).from(printContainer).save();
+    const worker = html2pdf().set(opt).from(printContainer);
+    await worker.save();
+    console.log('[Accord PDF] Agreement PDF generated successfully:', filename);
   } catch (err) {
     console.error('html2pdf error, triggering fallback print:', err);
     window.print();
-  } finally {
-    if (document.body.contains(printContainer)) {
-      document.body.removeChild(printContainer);
-    }
   }
 };
