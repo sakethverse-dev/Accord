@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, CheckCircle2, Copy, Check, Printer, RefreshCw } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, Copy, Check, Printer, RefreshCw, Download } from 'lucide-react';
 import { api } from '../services/api';
+import { downloadAgreementPdf } from '../services/pdfService';
 
 export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
   const [copied, setCopied] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState(null);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   if (!isOpen || !agreement) return null;
 
@@ -40,17 +42,17 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
               width: '40px',
               height: '40px',
               borderRadius: '10px',
-              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              background: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 2px 10px rgba(16, 185, 129, 0.3)',
-              color: '#ffffff',
+              boxShadow: '0 2px 10px rgba(255, 255, 255, 0.15)',
+              color: '#000000',
             }}>
-              <ShieldCheck size={22} />
+              <ShieldCheck size={22} strokeWidth={2.4} />
             </div>
             <div>
-              <span style={{ fontSize: '0.68rem', color: 'var(--risk-safe-text)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Legal Record of Execution
               </span>
               <h3 style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginTop: '1px', fontWeight: 800 }}>
@@ -215,12 +217,30 @@ export const AuditCertificateModal = ({ isOpen, onClose, agreement }) => {
             {verifying ? 'Verifying Integrity...' : 'Verify Cryptographic Integrity'}
           </button>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button className="btn btn-secondary btn-sm" onClick={() => window.print()}>
               <Printer size={13} />
-              Print Certificate
+              Print
             </button>
-            <button className="btn btn-primary btn-sm" onClick={onClose}>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={async () => {
+                setDownloadingPdf(true);
+                try {
+                  await downloadAgreementPdf(agreement);
+                } catch (err) {
+                  alert(`Error: ${err.message}`);
+                } finally {
+                  setDownloadingPdf(false);
+                }
+              }}
+              disabled={downloadingPdf}
+              id="btn-download-pdf-modal"
+            >
+              <Download size={13} />
+              {downloadingPdf ? 'Generating...' : 'Download Full PDF'}
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={onClose}>
               Done
             </button>
           </div>

@@ -1,11 +1,9 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { FileText, Sliders, Plus, LogOut, Moon, Sun } from 'lucide-react';
+import { FileText, Sliders, Plus, LogOut } from 'lucide-react';
 
 export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="mobile-bottom-nav">
@@ -19,7 +17,7 @@ export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
           flexDirection: 'column',
           alignItems: 'center',
           gap: '3px',
-          color: currentView === 'dashboard' ? 'var(--accent)' : 'var(--text-muted)',
+          color: currentView === 'dashboard' ? 'var(--text-main)' : 'var(--text-muted)',
           fontSize: '0.68rem',
           fontWeight: 600,
           cursor: 'pointer',
@@ -39,7 +37,7 @@ export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
           flexDirection: 'column',
           alignItems: 'center',
           gap: '3px',
-          color: currentView === 'policy' ? 'var(--accent)' : 'var(--text-muted)',
+          color: currentView === 'policy' ? 'var(--text-main)' : 'var(--text-muted)',
           fontSize: '0.68rem',
           fontWeight: 600,
           cursor: 'pointer',
@@ -49,13 +47,13 @@ export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
         <span>Policies</span>
       </button>
 
-      {/* 3. Center Floating Action Button (+) */}
+      {/* 3. Center Action Button (+) */}
       <button
         onClick={onOpenNew}
         className="mobile-fab-center"
         title="New Agreement"
       >
-        <Plus size={24} />
+        <Plus size={22} />
       </button>
 
       {/* 4. Sign Out */}
@@ -77,27 +75,6 @@ export const MobileBottomNav = ({ currentView, setCurrentView, onOpenNew }) => {
       >
         <LogOut size={18} />
         <span>Sign Out</span>
-      </button>
-
-      {/* 5. Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '3px',
-          color: 'var(--text-muted)',
-          fontSize: '0.68rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
-        title="Toggle Theme"
-      >
-        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        <span>Theme</span>
       </button>
     </nav>
   );

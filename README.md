@@ -1,7 +1,7 @@
-# PactFlow | Collaborative Contract Risk & Negotiation Room
+# Accord | Collaborative Contract Risk & Negotiation Room
 
 > **End-Term Software Engineering Project Submission**  
-> An interactive legal risk auditing and collaborative redline negotiation platform connecting freelancers and clients.
+> An institutional legal risk auditing, bilateral redline negotiation, and cryptographic tamper-evident consensus platform connecting freelancers and enterprises.
 
 ---
 
@@ -23,17 +23,17 @@ Traditional document workflows involve dozens of fragmented emails with confusin
 ---
 
 ## 3. The Solution
-**PactFlow** provides a shared **Agreement Room** where both parties meet:
+**Accord** provides a shared, high-security **Agreement Room** where both parties meet:
 1. **Automated Policy Audit:** The contract is ingested and parsed into distinct clauses, and our deterministic rule engine audits each clause against both parties' safety policies.
 2. **Quantified Alignment Score:** The platform computes a mathematical Alignment & Risk Score (0–100%) highlighting critical conflicts in red and warnings in amber.
-3. **Collaborative Consensus Protocol:** Either party can propose standard compromise clauses with word-level strikethrough/highlight diffs. The counter-party accepts or counters in 1-click, updating the text and score dynamically.
+3. **Collaborative Consensus Protocol:** Either party can propose standard compromise clauses with word-level strikethrough/highlight diffs. The counterparty accepts or counters in 1-click, updating the text and score dynamically.
 4. **Dual Digital Signatures & Cryptographic Seal:** Once terms are aligned, both parties execute the agreement with legal affirmations. The document is sealed with a **SHA-256 cryptographic checksum** and locked permanently in the database.
 
 ---
 
-## 4. Why PactFlow is Engineered Beyond Basic CRUD & AI Wrappers
+## 4. Why Accord is Engineered Beyond Basic CRUD & AI Wrappers
 
-| Evaluation Criteria | Naive / Disqualified Approach | PactFlow Engineering Implementation |
+| Evaluation Criteria | Naive / Disqualified Approach | Accord Engineering Implementation |
 |---|---|---|
 | **Application Logic** | Simple "Create, Read, Update, Delete" form | **Multi-Party Consensus State Machine:** `DRAFT` $\to$ `AUDITED` $\to$ `IN_NEGOTIATION` $\to$ `ALIGNED` $\to$ `PARTIALLY_SIGNED` $\to$ `FULLY_EXECUTED_LOCKED`. Neither party can unilaterally alter terms without counterparty consensus. |
 | **Policy Engine** | Dumping text into an LLM prompt | **Deterministic Rule Engine (`policyEngine.js`):** Pure software logic that extracts parameters (payment days, liability caps, IP conditions) and tests them against numerical thresholds and user safety policies. |
@@ -93,7 +93,7 @@ Traditional document workflows involve dozens of fragmented emails with confusin
 
 ## 7. Local Setup & Quick Start
 
-PactFlow features an **embedded in-memory MongoDB fallback**, meaning **evaluators do not need to install or configure MongoDB to run and test the project!**
+Accord connects directly to MongoDB Atlas or falls back to an embedded in-memory MongoDB instance for zero-configuration local evaluation.
 
 ### Prerequisites
 * Node.js v18+ (tested on v24)
@@ -117,13 +117,10 @@ PactFlow features an **embedded in-memory MongoDB fallback**, meaning **evaluato
    npm run dev
    ```
 
-* Backend API will run on: `http://localhost:5000`
-* Frontend App will run on: `http://localhost:5173`
+* Backend API runs on: `http://localhost:5000`
+* Frontend App runs on: `http://localhost:5173`
 
-> **Note for Evaluators:** The server automatically seeds two ready-to-test demo accounts:
-> * 👨‍💻 **Freelancer:** `freelancer@pactflow.dev` | Password: `password123`
-> * 🏢 **Client:** `client@pactflow.dev` | Password: `password123`
-> You can also click the **1-Click Demo Login** buttons on the sign-in page!
+> **Note for Users & Evaluators:** Create your own personal account using the **Create Account** tab on the sign-in screen, or load one of the **Standard Legal Templates** (MSA, Freelance Agreement, or NDA) to begin a contract audit and negotiation session.
 
 ---
 
@@ -146,24 +143,20 @@ CLIENT_URL=http://localhost:5173
 
 ## 9. 3–5 Minute Demo Video Walkthrough Script
 
-1. **Minute 1: The Problem & Policy Setup**
-   * Log in as **Alex Rivera (Freelancer)**.
-   * Open the **Policy Preferences** page: Show Alex's strict rules (Maximum payment window: Net-30; Liability capped at 1x contract fees; Strict ban on non-compete clauses).
+1. **Minute 1: Identity & Safety Policy Setup**
+   * Register or log in to **Accord**.
+   * Open the **Policy Preferences** page: Configure strict safety guidelines (Maximum payment window: Net-30; Liability capped at 1x contract fees; Strict ban on non-compete clauses; 14-day warranty).
 2. **Minute 2: Contract Ingestion & Automated Risk Audit**
-   * Return to Dashboard and click **"⚡ 1-Click Load Evaluator Demo Contract"**.
-   * Show the Agreement Room: The system instantly flags **3 Critical Conflicts** (Net-90 payment, Unlimited liability, and an 18-month Non-compete).
-   * Show the Risk Meter: Alignment Score starts at **40% (High Risk Blocked)**.
-3. **Minute 3: Collaborative Amendment & Live Diff**
-   * Click **"⚡ Propose Safe Compromise"** on Section 2 (Payment Terms).
-   * Notice how the policy engine auto-fills the standard compromise ("Invoices payable within Net-30"). Click **"Submit Amendment"**.
-   * Use the top navbar demo switcher to switch to **Sarah Chen (Client)**.
-   * As Sarah, view the pending amendment, click **"Inspect Diff"** to show the word-level strikethrough/addition tokens, and click **"Accept Amendment"**.
-   * Watch the clause turn green and the Alignment Score jump!
+   * Return to Dashboard and open a pre-vetted **Standard Legal Template** (e.g. Master Software Services Agreement) or paste a custom contract.
+   * View the Agreement Room: The deterministic policy engine and AI risk auditor evaluate each clause against safety policies and calculate a dynamic **Alignment & Risk Score (0-100%)**.
+3. **Minute 3: Collaborative Amendment & Live LCS Diff**
+   * Propose a safe compromise clause on flagged sections (e.g. payment terms or liability cap).
+   * Counterparty inspects the word-level strikethrough/addition diff and accepts or counter-proposes.
+   * Watch the clause update in real-time and the Alignment Score recalculate.
 4. **Minute 4: Dual E-Signature & Cryptographic Seal**
-   * Sarah clicks **"Sign Agreement"**, checks the legal affirmation, and signs.
-   * Switch back to Alex and sign as well.
-   * Status updates to **"🔒 Fully Executed & Sealed"**.
-   * Click **"View Cryptographic Certificate"**: Show the SHA-256 document checksum, verified signatures, and click **"Verify Cryptographic Integrity"** to demonstrate live tamper detection!
+   * Both parties execute the agreement with legal affirmations (supporting both **Draw** and **Type** signature modes).
+   * Once fully signed, the agreement is locked as **"Fully Executed & Sealed"**.
+   * View the **Cryptographic Audit Certificate**: Inspect the canonical SHA-256 document checksum and verify live tamper-evidence.
 
 ---
 

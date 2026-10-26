@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'Independent Contractor',
   },
+  avatarUrl: {
+    type: String,
+    default: '',
+  },
   policyProfile: {
     type: policySchema,
     default: () => ({}),

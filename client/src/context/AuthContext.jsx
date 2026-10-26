@@ -53,6 +53,12 @@ export const AuthProvider = ({ children }) => {
     return updatedPolicy;
   };
 
+  const updateProfile = async (profileData) => {
+    const updatedUser = await api.auth.updateProfile(profileData);
+    setUser(updatedUser);
+    return updatedUser;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -62,6 +68,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updatePolicy,
+        updateProfile,
       }}
     >
       {children}

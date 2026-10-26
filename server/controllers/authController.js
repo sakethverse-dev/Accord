@@ -138,9 +138,73 @@ const updatePolicyProfile = async (req, res, next) => {
   }
 };
 
+// @desc    Update user profile & password
+// @route   PUT /api/auth/profile
+// @access  Private
+const updateUserProfile = async (req, res, next) => {
+  try {
+    const { name, companyOrTitle, avatarUrl, currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    if (name && name.trim()) {
+      user.name = name.trim();
+    }
+    if (companyOrTitle !== undefined) {
+      user.companyOrTitle = companyOrTitle.trim();
+    }
+    if (avatarUrl !== undefined) {
+      user.avatarUrl = avatarUrl.trim();
+    }
+
+    // If changing password
+    if (newPassword && newPassword.trim()) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password is required to verify your identity before setting a new password.',
+        });
+      }
+
+      const isMatch = await user.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password does not match our records.',
+        });
+      }
+
+      if (newPassword.trim().length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'New password must be at least 6 characters long.',
+        });
+      }
+
+      user.password = newPassword.trim();
+    }
+
+    await user.save();
+
+    const sanitizedUser = await User.findById(user._id);
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully.',
+      data: sanitizedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getCurrentUser,
   updatePolicyProfile,
+  updateUserProfile,
 };

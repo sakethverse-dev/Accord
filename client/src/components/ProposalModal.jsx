@@ -83,10 +83,10 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal, agree
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 800, textTransform: 'uppercase' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-main)', fontWeight: 800, textTransform: 'uppercase' }}>
                 Amendment Proposal
               </span>
-              <span style={{ fontSize: '0.7rem', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+              <span style={{ fontSize: '0.7rem', background: '#1c1c20', color: '#ffffff', border: '1px solid #333338', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                 <Zap size={10} /> Gemini 2.5 Flash
               </span>
             </div>
@@ -124,15 +124,15 @@ export const ProposalModal = ({ clause, isOpen, onClose, onSubmitProposal, agree
 
         {/* Gemini AI Assistant Box */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%)',
-          border: '1px solid rgba(59, 130, 246, 0.25)',
+          background: 'var(--bg-muted)',
+          border: '1px solid var(--border-medium)',
           borderRadius: '10px',
           padding: '12px 14px',
           marginBottom: '16px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              <Sparkles size={14} color="#3b82f6" />
+              <Sparkles size={14} color="#ffffff" />
               <span>Ask Gemini AI to Improve or Rewrite</span>
             </div>
             {clause.suggestedReplacement && (

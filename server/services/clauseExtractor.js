@@ -114,10 +114,16 @@ function parseRawContractText(rawText) {
     const headerLine = lines[0] || `Section ${index + 1}`;
     const bodyText = lines.slice(1).join(' ') || sec;
 
+    // Strip leading "Section X.", "Article X.", or "1." from title so it's not duplicated
+    let cleanTitle = headerLine.replace(/^(?:section\s+\d+|article\s+\d+|\d+)\s*[:.-]?\s*/i, '').trim();
+    if (!cleanTitle || cleanTitle.length < 2) {
+      cleanTitle = headerLine.replace(/[:.-]/g, '').trim() || `Clause ${index + 1}`;
+    }
+
     return {
       clauseId: `clause-${index + 1}`,
       sectionNumber: `Section ${index + 1}`,
-      title: headerLine.replace(/[:.-]/g, '').trim(),
+      title: cleanTitle,
       category: detectCategory(sec),
       originalText: bodyText.length > 0 ? bodyText : sec,
       currentText: bodyText.length > 0 ? bodyText : sec,

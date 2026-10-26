@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import { 
   Shield, 
   User, 
   Briefcase, 
   ArrowRight, 
   Lock, 
-  Sun, 
-  Moon, 
   AlertCircle 
 } from 'lucide-react';
 
 export const AuthPage = ({ onAuthSuccess }) => {
   const { login, register } = useAuth();
-  const { theme, toggleTheme } = useTheme();
 
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState('');
@@ -59,7 +55,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
       background: 'var(--bg-app)',
       padding: '24px 16px',
     }}>
-      {/* Top Bar with Brand & Theme Switcher */}
+      {/* Top Bar with Brand */}
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
@@ -70,57 +66,35 @@ export const AuthPage = ({ onAuthSuccess }) => {
         paddingBottom: '16px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '9px',
-            background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            boxShadow: '0 2px 8px rgba(15, 23, 42, 0.25)',
-          }}>
-            <Shield size={18} />
-          </div>
+          <img
+            src="/logo_accord.jpg"
+            alt="Accord Logo"
+            style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: '8px',
+              border: '1px solid #27272a',
+              objectFit: 'cover',
+            }}
+          />
           <div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.025em', lineHeight: 1 }}>
-              Pact<span style={{ color: 'var(--accent)' }}>Flow</span>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1 }}>
+              Accord
             </div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '2px' }}>
-              Legal Trust Engine
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '3px' }}>
+              Contract Consensus
             </div>
           </div>
         </div>
-
-        <button
-          onClick={toggleTheme}
-          style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '16px',
-            padding: '4px 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            color: 'var(--text-main)',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-          }}
-          title="Toggle Theme"
-        >
-          {theme === 'dark' ? <Moon size={13} /> : <Sun size={13} />}
-          <span style={{ textTransform: 'capitalize' }}>{theme} mode</span>
-        </button>
       </div>
+
 
       {/* Main Center Form */}
       <div style={{ width: '100%', maxWidth: '440px', margin: '0 auto' }}>
         {/* Card Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <h1 style={{ fontSize: '1.65rem', color: 'var(--text-main)', fontWeight: 800, letterSpacing: '-0.025em' }}>
-            {isRegister ? 'Create Your Account' : 'Sign in to PactFlow'}
+            {isRegister ? 'Create Your Account' : 'Sign in to Accord'}
           </h1>
           <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             {isRegister 
@@ -179,12 +153,12 @@ export const AuthPage = ({ onAuthSuccess }) => {
                 padding: '7px',
                 borderRadius: '6px',
                 border: 'none',
-                background: !isRegister ? 'var(--bg-surface)' : 'transparent',
-                color: !isRegister ? 'var(--text-main)' : 'var(--text-muted)',
+                background: !isRegister ? '#ffffff' : 'transparent',
+                color: !isRegister ? '#000000' : 'var(--text-muted)',
                 fontWeight: !isRegister ? 700 : 500,
                 fontSize: '0.8rem',
                 cursor: 'pointer',
-                boxShadow: !isRegister ? 'var(--shadow-sm)' : 'none',
+                boxShadow: !isRegister ? '0 1px 3px rgba(255, 255, 255, 0.15)' : 'none',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -199,12 +173,12 @@ export const AuthPage = ({ onAuthSuccess }) => {
                 padding: '7px',
                 borderRadius: '6px',
                 border: 'none',
-                background: isRegister ? 'var(--bg-surface)' : 'transparent',
-                color: isRegister ? 'var(--text-main)' : 'var(--text-muted)',
+                background: isRegister ? '#ffffff' : 'transparent',
+                color: isRegister ? '#000000' : 'var(--text-muted)',
                 fontWeight: isRegister ? 700 : 500,
                 fontSize: '0.8rem',
                 cursor: 'pointer',
-                boxShadow: isRegister ? 'var(--shadow-sm)' : 'none',
+                boxShadow: isRegister ? '0 1px 3px rgba(255, 255, 255, 0.15)' : 'none',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -244,7 +218,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
                     className="input-field"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Alex Rivera"
+                    placeholder="e.g. Your Full Legal Name"
                     required
                     id="input-register-name"
                   />
@@ -263,18 +237,19 @@ export const AuthPage = ({ onAuthSuccess }) => {
                       style={{
                         padding: '10px 8px',
                         borderRadius: '8px',
-                        background: role === 'freelancer' ? 'var(--accent-bg)' : 'var(--bg-muted)',
-                        border: role === 'freelancer' ? '1px solid var(--accent)' : '1px solid var(--border-subtle)',
-                        color: role === 'freelancer' ? 'var(--accent)' : 'var(--text-secondary)',
+                        background: role === 'freelancer' ? '#ffffff' : 'var(--bg-muted)',
+                        border: role === 'freelancer' ? '1px solid #ffffff' : '1px solid var(--border-subtle)',
+                        color: role === 'freelancer' ? '#000000' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         textAlign: 'center',
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       <div style={{ fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
                         <User size={14} />
                         Freelancer
                       </div>
-                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.68rem', color: role === 'freelancer' ? '#444448' : 'var(--text-muted)', marginTop: '2px' }}>
                         Protects payment & IP
                       </div>
                     </button>
@@ -286,18 +261,19 @@ export const AuthPage = ({ onAuthSuccess }) => {
                       style={{
                         padding: '10px 8px',
                         borderRadius: '8px',
-                        background: role === 'client' ? 'var(--accent-bg)' : 'var(--bg-muted)',
-                        border: role === 'client' ? '1px solid var(--accent)' : '1px solid var(--border-subtle)',
-                        color: role === 'client' ? 'var(--accent)' : 'var(--text-secondary)',
+                        background: role === 'client' ? '#ffffff' : 'var(--bg-muted)',
+                        border: role === 'client' ? '1px solid #ffffff' : '1px solid var(--border-subtle)',
+                        color: role === 'client' ? '#000000' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         textAlign: 'center',
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       <div style={{ fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
                         <Briefcase size={14} />
                         Client / Enterprise
                       </div>
-                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.68rem', color: role === 'client' ? '#444448' : 'var(--text-muted)', marginTop: '2px' }}>
                         Protects delivery & SLA
                       </div>
                     </button>
@@ -384,7 +360,7 @@ export const AuthPage = ({ onAuthSuccess }) => {
 
       {/* Footer */}
       <div style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '20px' }}>
-        PactFlow Institutional Legal Infrastructure © 2026. All rights reserved.
+        Accord Institutional Contract Infrastructure © 2026. All rights reserved.
       </div>
     </div>
   );

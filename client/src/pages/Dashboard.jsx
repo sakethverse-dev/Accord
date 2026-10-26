@@ -17,10 +17,12 @@ import {
   ExternalLink,
   ShieldAlert,
   ChevronRight,
-  FileCheck
+  FileCheck,
+  Download
 } from 'lucide-react';
+import { downloadAgreementPdf } from '../services/pdfService';
 
-export const Dashboard = ({ onSelectAgreement }) => {
+export const Dashboard = ({ onSelectAgreement, onOpenTemplate }) => {
   const { user } = useAuth();
   const [agreements, setAgreements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,12 +115,21 @@ export const Dashboard = ({ onSelectAgreement }) => {
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
+            className="btn btn-secondary"
+            onClick={onOpenTemplate}
+            id="btn-open-templates-header"
+          >
+            <FileCheck size={15} />
+            <span>Standard Templates</span>
+          </button>
+
+          <button
             className="btn btn-primary"
             onClick={() => setShowCustomModal(true)}
             id="btn-create-custom-contract"
           >
             <Plus size={15} />
-            New Agreement
+            <span>New Agreement</span>
           </button>
         </div>
       </div>
@@ -253,10 +264,16 @@ export const Dashboard = ({ onSelectAgreement }) => {
               ? 'No contracts match the selected filter criteria.' 
               : 'Create a new agreement or load a standard agreement template to get started.'}
           </p>
-          <button className="btn btn-primary btn-sm" onClick={handleCreateSample} style={{ margin: '0 auto' }}>
-            <FileCheck size={13} />
-            Load Standard Template
-          </button>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <button className="btn btn-secondary btn-sm" onClick={onOpenTemplate}>
+              <FileCheck size={13} />
+              Standard Templates
+            </button>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowCustomModal(true)}>
+              <Plus size={13} />
+              Custom Agreement
+            </button>
+          </div>
         </div>
       ) : (
         <div className="contracts-table-container">
@@ -415,19 +432,40 @@ export const Dashboard = ({ onSelectAgreement }) => {
                     </td>
 
                     {/* Action */}
-                    <td style={{ textAlign: 'right', minWidth: '160px', whiteSpace: 'nowrap' }}>
-                      <button
-                        className={`btn btn-sm ${hasRisks ? 'btn-primary' : 'btn-secondary'}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectAgreement(agreement._id);
-                        }}
-                        id={`btn-open-contract-${agreement._id}`}
-                        style={{ padding: '6px 14px', whiteSpace: 'nowrap' }}
-                      >
-                        <span>{isSealed ? 'Inspect' : hasRisks ? 'Review & Resolve' : 'Open Room'}</span>
-                        <ChevronRight size={13} />
-                      </button>
+                    <td style={{ textAlign: 'right', minWidth: '180px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        {isSealed && (
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                const fullAgr = await api.agreements.getById(agreement._id);
+                                await downloadAgreementPdf(fullAgr);
+                              } catch (err) {
+                                alert('Failed to download PDF: ' + err.message);
+                              }
+                            }}
+                            title="Download Executed Agreement PDF"
+                            style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                          >
+                            <Download size={13} />
+                            <span>PDF</span>
+                          </button>
+                        )}
+                        <button
+                          className={`btn btn-sm ${hasRisks ? 'btn-primary' : 'btn-secondary'}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectAgreement(agreement._id);
+                          }}
+                          id={`btn-open-contract-${agreement._id}`}
+                          style={{ padding: '6px 14px', whiteSpace: 'nowrap' }}
+                        >
+                          <span>{isSealed ? 'Inspect' : hasRisks ? 'Review & Resolve' : 'Open Room'}</span>
+                          <ChevronRight size={13} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

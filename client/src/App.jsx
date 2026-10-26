@@ -7,6 +7,7 @@ import { Dashboard } from './pages/Dashboard';
 import { AgreementRoom } from './pages/AgreementRoom';
 import { PolicySettings } from './pages/PolicySettings';
 import { AuthPage } from './pages/AuthPage';
+import { TemplateModal } from './components/TemplateModal';
 import { api } from './services/api';
 import { Shield, Menu } from 'lucide-react';
 
@@ -14,6 +15,7 @@ const AppContent = () => {
   const { user, loading } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'room' | 'policy'
   const [activeAgreementId, setActiveAgreementId] = useState(null);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   // Check URL pathname for /invite/:token or pending invite from storage
   useEffect(() => {
@@ -43,14 +45,8 @@ const AppContent = () => {
     }
   }, [user]);
 
-  const handleOpenSample = async () => {
-    try {
-      const newAgreement = await api.agreements.create({ useSample: true });
-      setActiveAgreementId(newAgreement._id);
-      setCurrentView('room');
-    } catch (err) {
-      alert(`Error loading standard template: ${err.message}`);
-    }
+  const handleOpenSample = () => {
+    setShowTemplateModal(true);
   };
 
   if (loading) {
@@ -64,7 +60,7 @@ const AppContent = () => {
         color: 'var(--text-muted)',
         fontSize: '0.9rem',
       }}>
-        Initializing PactFlow Enterprise Infrastructure...
+        Initializing Accord Consensus Infrastructure...
       </div>
     );
   }
@@ -92,24 +88,23 @@ const AppContent = () => {
           marginBottom: '20px',
         }} className="mobile-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '30px',
-              height: '30px',
-              borderRadius: '8px',
-              background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-            }}>
-              <Shield size={16} />
-            </div>
-            <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
-              Pact<span style={{ color: 'var(--accent)' }}>Flow</span>
+            <img
+              src="/logo_accord.jpg"
+              alt="Accord Logo"
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '6px',
+                border: '1px solid #27272a',
+                objectFit: 'cover',
+              }}
+            />
+            <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.03em' }}>
+              Accord
             </span>
           </div>
 
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
             {user?.name} ({user?.role})
           </div>
         </div>
@@ -120,6 +115,7 @@ const AppContent = () => {
               setActiveAgreementId(id);
               setCurrentView('room');
             }}
+            onOpenTemplate={() => setShowTemplateModal(true)}
           />
         )}
 
@@ -142,8 +138,20 @@ const AppContent = () => {
       <MobileBottomNav
         currentView={currentView}
         setCurrentView={setCurrentView}
-        onOpenNew={handleOpenSample}
+        onOpenNew={() => setShowTemplateModal(true)}
       />
+
+      {/* Standard Legal Template Picker & Preview Modal */}
+      {showTemplateModal && (
+        <TemplateModal
+          onClose={() => setShowTemplateModal(false)}
+          onSelectTemplate={async ({ title, rawText }) => {
+            const newAgreement = await api.agreements.create({ title, rawText });
+            setActiveAgreementId(newAgreement._id);
+            setCurrentView('room');
+          }}
+        />
+      )}
 
       {/* Responsive Style helper for mobile header */}
       <style>{`

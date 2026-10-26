@@ -8,6 +8,13 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
   const [affirmationChecked, setAffirmationChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Sync signerName whenever user profile updates or modal opens
+  useEffect(() => {
+    if (user?.name) {
+      setSignerName(user.name);
+    }
+  }, [user?.name, isOpen]);
+
   // Tab: 'draw' | 'type'
   const [signMode, setSignMode] = useState('draw');
 
@@ -201,7 +208,7 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
               className="input-field"
               value={signerName}
               onChange={(e) => setSignerName(e.target.value)}
-              placeholder="e.g. Alex Rivera"
+              placeholder="e.g. Your Full Legal Name"
               required
               id="input-signer-name"
               style={{ fontSize: '0.95rem', fontWeight: 700 }}
@@ -232,8 +239,8 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
                     padding: '4px 10px',
                     borderRadius: '4px',
                     border: 'none',
-                    background: signMode === 'draw' ? 'var(--primary)' : 'transparent',
-                    color: signMode === 'draw' ? '#ffffff' : 'var(--text-muted)',
+                    background: signMode === 'draw' ? '#ffffff' : 'transparent',
+                    color: signMode === 'draw' ? '#000000' : 'var(--text-muted)',
                     fontSize: '0.72rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -253,8 +260,8 @@ export const SignatureModal = ({ isOpen, onClose, onSign, agreementTitle }) => {
                     padding: '4px 10px',
                     borderRadius: '4px',
                     border: 'none',
-                    background: signMode === 'type' ? 'var(--primary)' : 'transparent',
-                    color: signMode === 'type' ? '#ffffff' : 'var(--text-muted)',
+                    background: signMode === 'type' ? '#ffffff' : 'transparent',
+                    color: signMode === 'type' ? '#000000' : 'var(--text-muted)',
                     fontSize: '0.72rem',
                     fontWeight: 700,
                     cursor: 'pointer',

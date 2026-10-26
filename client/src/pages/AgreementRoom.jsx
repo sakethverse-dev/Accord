@@ -28,8 +28,10 @@ import {
   RefreshCw,
   Send,
   RotateCcw,
-  XCircle
+  XCircle,
+  Download
 } from 'lucide-react';
+import { downloadAgreementPdf } from '../services/pdfService';
 
 export const AgreementRoom = ({ agreementId, onBack }) => {
   const { user } = useAuth();
@@ -52,6 +54,19 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
   const [showSignModal, setShowSignModal] = useState(false);
   const [showCertModal, setShowCertModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!agreement) return;
+    setDownloadingPdf(true);
+    try {
+      await downloadAgreementPdf(agreement);
+    } catch (err) {
+      alert(`Error generating PDF: ${err.message}`);
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   const fetchAgreement = async () => {
     try {
@@ -254,14 +269,26 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
           </button>
 
           {isLocked ? (
-            <button
-              className="btn btn-safe btn-sm"
-              onClick={() => setShowCertModal(true)}
-              id="btn-view-certificate"
-            >
-              <ShieldCheck size={14} />
-              View Legal Certificate
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => setShowCertModal(true)}
+                id="btn-view-certificate"
+              >
+                <ShieldCheck size={14} />
+                <span>Certificate</span>
+              </button>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={handleDownloadPdf}
+                disabled={downloadingPdf}
+                id="btn-download-pdf-header"
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Download size={14} />
+                <span>{downloadingPdf ? 'Generating PDF...' : 'Download PDF'}</span>
+              </button>
+            </div>
           ) : (
             <button
               className={`btn btn-sm ${hasUserSigned ? 'btn-secondary' : 'btn-safe'}`}
@@ -462,8 +489,25 @@ export const AgreementRoom = ({ agreementId, onBack }) => {
             </div>
           </div>
           
-          {/* Actions to avoid deadlock */}
-          {!isLocked && (
+          {/* Actions for locked vs in-progress */}
+          {isLocked ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => setShowCertModal(true)}
+              >
+                <ShieldCheck size={13} /> View Audit Certificate
+              </button>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={handleDownloadPdf}
+                disabled={downloadingPdf}
+                id="btn-download-pdf-banner"
+              >
+                <Download size={13} /> {downloadingPdf ? 'Generating PDF...' : 'Download Executed Agreement (PDF)'}
+              </button>
+            </div>
+          ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               {hasUserSigned ? (
                 <button

@@ -56,12 +56,12 @@ export const PolicySettings = ({ onBack }) => {
             width: '38px',
             height: '38px',
             borderRadius: '9px',
-            background: 'var(--primary)',
+            background: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 10px rgba(79, 70, 229, 0.4)',
-            color: '#ffffff',
+            boxShadow: '0 2px 8px rgba(255, 255, 255, 0.15)',
+            color: '#000000',
           }}>
             <Sliders size={18} />
           </div>
@@ -122,12 +122,13 @@ export const PolicySettings = ({ onBack }) => {
                 style={{
                   padding: '9px',
                   borderRadius: '6px',
-                  background: maxPaymentDays === days ? 'var(--primary)' : 'var(--bg-muted)',
-                  border: maxPaymentDays === days ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
-                  color: maxPaymentDays === days ? '#ffffff' : 'var(--text-secondary)',
+                  background: maxPaymentDays === days ? '#ffffff' : 'var(--bg-muted)',
+                  border: maxPaymentDays === days ? '1px solid #ffffff' : '1px solid var(--border-subtle)',
+                  color: maxPaymentDays === days ? '#000000' : 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontWeight: 700,
                   fontSize: '0.825rem',
+                  transition: 'all 0.15s ease',
                 }}
               >
                 Net-{days}
@@ -319,12 +320,13 @@ export const PolicySettings = ({ onBack }) => {
                 style={{
                   padding: '9px',
                   borderRadius: '6px',
-                  background: bugWarrantyDays === days ? 'var(--primary)' : 'var(--bg-muted)',
-                  border: bugWarrantyDays === days ? '1px solid var(--primary)' : '1px solid var(--border-subtle)',
-                  color: bugWarrantyDays === days ? '#ffffff' : 'var(--text-secondary)',
+                  background: bugWarrantyDays === days ? '#ffffff' : 'var(--bg-muted)',
+                  border: bugWarrantyDays === days ? '1px solid #ffffff' : '1px solid var(--border-subtle)',
+                  color: bugWarrantyDays === days ? '#000000' : 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontWeight: 700,
                   fontSize: '0.825rem',
+                  transition: 'all 0.15s ease',
                 }}
               >
                 {days} Days

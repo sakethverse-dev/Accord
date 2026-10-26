@@ -67,6 +67,16 @@ export const api = {
       const data = await handleResponse(res);
       return data.data;
     },
+
+    updateProfile: async (profileData) => {
+      const res = await fetch(`${API_BASE}/auth/profile`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(profileData),
+      });
+      const data = await handleResponse(res);
+      return data.data;
+    },
   },
 
   // Agreements
@@ -87,11 +97,11 @@ export const api = {
       return data.data;
     },
 
-    create: async ({ title, rawText }) => {
+    create: async ({ title, rawText, useSample } = {}) => {
       const res = await fetch(`${API_BASE}/agreements`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ title, rawText }),
+        body: JSON.stringify({ title, rawText, useSample }),
       });
       const data = await handleResponse(res);
       return data.data;
