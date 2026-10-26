@@ -24,17 +24,37 @@ app.use(mongoSanitize());
 
 // 3. CORS Configuration
 const allowedOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(',').map((s) => s.trim())
-  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+  ? process.env.CLIENT_URL.split(',').map((s) => s.trim().replace(/\/$/, ''))
+  : [];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow non-browser requests or allowed frontend origins in production
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      callback(new Error('Blocked by CORS policy'));
+    // 1. Allow direct browser navigation, server-to-server, and same-origin assets
+    if (!origin) return callback(null, true);
+
+    const cleanOrigin = origin.replace(/\/$/, '');
+
+    // 2. Automatically allow any Render deployment (*.onrender.com)
+    if (cleanOrigin.endsWith('.onrender.com')) {
+      return callback(null, true);
     }
+
+    // 3. Allow local dev environments
+    if (cleanOrigin.includes('localhost') || cleanOrigin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+
+    // 4. Allow explicitly configured CLIENT_URL
+    if (allowedOrigins.length > 0 && allowedOrigins.includes(cleanOrigin)) {
+      return callback(null, true);
+    }
+
+    // 5. Allow in non-production
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
+    callback(new Error(`Blocked by CORS policy: ${origin} not permitted`));
   },
   credentials: true,
 }));
