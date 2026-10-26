@@ -12,9 +12,11 @@ dotenv.config();
 
 const app = express();
 
-// 1. Security Headers via Helmet
+// 1. Security Headers via Helmet (relaxed CSP & COEP for SPA external assets/fonts)
 app.use(helmet({
+  contentSecurityPolicy: false,
   crossOriginResourcePolicy: false,
+  crossOriginEmbedderPolicy: false,
 }));
 
 // 2. Prevent NoSQL Injection attacks by sanitizing request bodies & query params
@@ -81,10 +83,13 @@ app.use('/api/agreements', require('./routes/agreementRoutes'));
 // Serve static frontend assets in production
 const path = require('path');
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../client/dist');
+  const distPath = path.resolve(__dirname, '../client/dist');
   app.use(express.static(distPath));
   app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      if (path.extname(req.path)) {
+        return next();
+      }
       return res.sendFile(path.resolve(distPath, 'index.html'));
     }
     next();
