@@ -5,6 +5,7 @@
 
 **Live Application:** [https://accord-zwby.onrender.com](https://accord-zwby.onrender.com)  
 **GitHub Repository:** [https://github.com/sakethverse-dev/Accord](https://github.com/sakethverse-dev/Accord)  
+**Project Demo & Deliverables (Google Drive):** [https://drive.google.com/drive/folders/1jKO_UrM4QvhuUeBMO2W2lJQY7m2NJiGC?usp=drive_link](https://drive.google.com/drive/folders/1jKO_UrM4QvhuUeBMO2W2lJQY7m2NJiGC?usp=drive_link)  
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
@@ -150,6 +151,8 @@ CLIENT_URL=http://localhost:5173
 ---
 
 ## 9. 3–5 Minute Demo Video Walkthrough Script
+
+> 📁 **Submission Video & Deliverables Folder:** [Open Google Drive Submission Link](https://drive.google.com/drive/folders/1jKO_UrM4QvhuUeBMO2W2lJQY7m2NJiGC?usp=drive_link)
 
 1. **Minute 1: Identity & Safety Policy Setup**
    * Register or log in to **Accord**.
